@@ -95,45 +95,50 @@
 
       <el-main>
         <!-- 页签 -->
-        <div style="margin-bottom: 30px">
+        <div style="margin-bottom: 15px">
           <el-breadcrumb separator="/">
             <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
             <el-breadcrumb-item>用户管理</el-breadcrumb-item>
           </el-breadcrumb>
         </div>
-
         <!-- 搜索 -->
+        <div style="margin-bottom: 5px">
+          <el-checkbox-group
+            v-model="checkedsearchs"
+            @change="handlecheckedsearchsChange"
+            :max="3"
+            :min="1"
+          >
+            <el-checkbox
+              v-for="search in searchs"
+              :label="search"
+              :key="search"
+              >{{ search }}</el-checkbox
+            >
+          </el-checkbox-group>
+        </div>
 
         <div style="margin: 10px 0; position: relative">
-          <div>
-            <el-checkbox
-              :indeterminate="isIndeterminate"
-              v-model="checkAll"
-              @change="handleCheckAllChange"
-              >全选</el-checkbox
+          <div style="display: flex;">
+            <div
+              v-for="(check, index) in checkedsearchs"
+              :key="index"
+              style="width: 200px; margin-right: 5px"
             >
-            <div style="margin: 15px 0"></div>
-            <el-checkbox-group
-              v-model="checkedCities"
-              @change="handleCheckedCitiesChange"
+              <el-input
+                v-model="searchContent[index]"
+                placeholder="请输入搜索内容"
+                suffix-icon="el-icon-search"
+              ></el-input>
+            </div>
+
+            <el-button
+              type="primary"
+              style="margin-left: 5px"
+              @click="handleSearch"
+              >搜索</el-button
             >
-              <el-checkbox v-for="city in cities" :label="city" :key="city">{{
-                city
-              }}</el-checkbox>
-            </el-checkbox-group>
           </div>
-          <el-input
-            v-model="searchContent"
-            style="width: 200px"
-            placeholder="请输入搜索内容"
-            suffix-icon="el-icon-search"
-          ></el-input>
-          <el-button
-            type="primary"
-            style="margin-left: 5px"
-            @click="handleSearch"
-            >搜索</el-button
-          >
 
           <!-- 新增 -->
           <div style="position: absolute; right: 0px; top: 0px">
@@ -215,6 +220,18 @@
 <script>
 export default {
   data() {
+    const searchOptions = [
+      "学号",
+      "姓名",
+      "性别",
+      "出生日期",
+      "年级",
+      "班级",
+      "专业",
+      "邮箱",
+      "手机号",
+      "地址",
+    ];
     return {
       tableData: [],
       total: 0,
@@ -224,9 +241,10 @@ export default {
       isCollapse: false,
       sideWidth: 200,
       logoTextShow: true,
-      searchCondition: "", // 搜索条件
-      searchContent: "", // 搜索内容
-      conditions: [], // 搜索条件集合
+      checkedsearchs: ["学号"], //选择的条件
+      searchs: searchOptions,
+      searchContent: [], //输入的条件
+      searchString: "",
     };
   },
   created() {
@@ -263,14 +281,15 @@ export default {
         "http://localhost:9001/sms/admin/student/page?pageNum=" +
           this.pageNum +
           "&pageSize=" +
-          this.pageSize +
-          "&searchContent=" +
-          this.searchContent
+          this.pageSize
+          +"&searchString="
+          +encodeURIComponent(this.searchString)
+          
+          
       )
         .then((res) => res.json())
         .then((res) => {
-          console.log(res);
-          this.tableData = res.data;
+          this.tableData = res.records;
           this.total = res.total;
         });
     },
@@ -286,11 +305,49 @@ export default {
     selectCondition(condition) {
       this.searchCondition = condition;
     },
-    handleCommand() {
-      // do something when command is executed
+
+    handlecheckedsearchsChange(values) {
+      this.searchContent = [];
+      
     },
     handleSearch() {
-      this.load();
+      this.searchString = ''
+      for (let index = 0; index < this.checkedsearchs.length; index++) {
+        switch(this.checkedsearchs[index]){
+          case this.searchs[0]:
+            this.searchString += "&id=" +this.searchContent[index];
+            break;
+          case this.searchs[1]:
+            this.searchString += "&name="+this.searchContent[index];
+            break;
+          case this.searchs[2]:
+            this.searchString += "&gender="+this.searchContent[index];
+            break;
+          case this.searchs[3]:
+            this.searchString += "&birthday="+this.searchContent[index];
+            break;
+          case this.searchs[4]:
+            this.searchString += "&grade="+this.searchContent[index];
+            break;
+          case this.searchs[5]:
+            this.searchString += "&class_id="+this.searchContent[index];
+            break;
+          case this.searchs[6]:
+            this.searchString += "&major="+this.searchContent[index];
+            break;
+          case this.searchs[7]:
+            this.searchString += "&email"+this.searchContent[index];
+            break;
+          case this.searchs[8]:
+            this.searchString += "&phone="+this.searchContent[index];
+            break;
+          case this.searchs[9]:
+            this.searchString += "&address="+this.searchContent[index];
+            break;
+        }
+        
+      }
+      this.load()
     },
   },
 };
