@@ -1,0 +1,91 @@
+<template>
+  <el-container style="height: 100vh">
+    <el-aside
+      :width="sideWidth + 'px'"
+      style="
+        background-color: rgb(238, 241, 246);
+        box-shadow: 2px 0 6px rgb(0 21 41 / 35%);
+      "
+    >
+      <Aside :isCollapse="isCollapse" :logoTextShow="logoTextShow"/>
+
+    </el-aside>
+
+    <el-container>
+      <el-header
+        style="
+          background-color: #fff;
+          font-size: 12px;
+          border-bottom: 1px solid #ccc;
+
+        "
+      >
+        <Header :collapseBtnClass="collapseBtnClass" :collapse="isCollapse" @callParentFunction="handleChildFunctionCall" />
+      </el-header>
+
+      <el-main>
+        <!-- 当前页面的子路由会在rute-view里面展示 -->
+          <router-view />
+      </el-main>
+    </el-container>
+  </el-container>
+</template>
+<style>
+.el-header {
+  background-color: #b3c0d1;
+  color: #333;
+  line-height: 60px;
+}
+
+.el-aside {
+  color: #333;
+}
+</style>
+<script>
+
+import Aside from '../components/Aside.vue';
+import Header from '../components/Header.vue';
+export default {
+  components: { Aside,Header },
+  data() {
+
+    return {
+
+      collapseBtnClass: "el-icon-s-fold",
+      isCollapse: false,
+      sideWidth: 200,
+      logoTextShow: true,
+      
+    };
+  },
+  methods: {
+    /**
+    + * 切换组件的收缩状态。
+    + */
+    collapse() {
+      //点击收缩
+      // 切换收缩状态
+      this.isCollapse = !this.isCollapse;
+
+      if (this.isCollapse) {
+        // 如果收缩，将侧边栏宽度设置为 64
+        this.sideWidth = 64;
+        // 更新收缩按钮的样式类
+        this.collapseBtnClass = "el-icon-s-unfold";
+        this.logoTextShow = false;
+      } else {
+        // 如果未收缩，将侧边栏宽度设置为 200
+        this.sideWidth = 200;
+        // 更新收缩按钮的样式类
+        this.collapseBtnClass = "el-icon-s-fold";
+        this.sidewidth = 200;
+        this.logoTextShow = true;
+      }
+    },
+    handleChildFunctionCall(data){
+      this.collapse()
+    }
+
+  },
+};
+</script>
