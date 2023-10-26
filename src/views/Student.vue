@@ -105,13 +105,10 @@
           :on-success="handExcelleImportSuccess"
           :on-error="handleExcelleImportError"
         >
-          <el-button type="primary"
-          style="margin-right: 5px"
-          >导入 <i class="el-icon-upload"></i
-        ></el-button>
+          <el-button type="primary" style="margin-right: 5px"
+            >导入 <i class="el-icon-upload"></i
+          ></el-button>
         </el-upload>
-
-
 
         <el-button type="primary" @click="exportBtn"
           >导出 <i class="el-icon-download"></i
@@ -448,6 +445,10 @@
 <script>
 import request from "../utils/request";
 import moment from "moment";
+import { getStudentPage,saveStudent,removeStudent,updatastudent} from "@/api/student";
+import { getUser, updateIsActivate ,addUser,removeUser,updataUser} from "@/api/user";
+import { getClassList, getGradeList, getClassListBygradeId,getMajorByclassId,getGradeByclassId } from "@/api/class";
+import { getMajorList } from "@/api/major";
 export default {
   name: "Student",
   data() {
@@ -509,74 +510,71 @@ export default {
     this.getsomeList();
   },
   methods: {
-    load() {
-      this.tableData = []
+    // 获取用户数据
+    async load() {
+      this.tableData = [];
       //请求分页查询数据
-      request
-        .get("/admin/student/page", {
-          params: {
-            pageNum: this.pageNum,
-            pageSize: this.pageSize,
-            searchString: this.searchString,
-          },
-        })
-        .then((res) => {
-          // res.records.forEach((record) => {
-          //   record.birthday = moment(record.birthday).format("YYYY-MM-DD");
-          // });
-          this.tableData = res.records;
-          this.total = res.total;
-          this.getactive();
+      const params = {
+        pageNum: this.pageNum,
+        pageSize: this.pageSize,
+        searchString: this.searchString,
+      };
+      const res = await getStudentPage(params);
+      if (res.code == 200) {
+        this.tableData = res.data.records;
+        this.total = res.data.total;
+        this.tableData.forEach((item, index) => {
+        this.getactive(item);
         });
+      }
     },
-    getactive() {
+    //获取用户的激活状态
+    async getactive(item) {
       //获取用户信息
-      this.tableData.forEach((item, index) => {
-        request
-          .get("/admin/user/getUser", {
-            params: {
-              id: item.id,
-            },
-          })
-          .then((res) => {
-            item.activation = res.activation == 1 ? "true" : "false";
-          });
-      });
+      const params = {
+        id: item.id,
+      };
+      const res = await getUser(params);
+      if (res.code == 200) {
+        item.activation = res.data.activation == 1 ? "true" : "false";
+      }
     },
 
-    handleSwitchChange(row) {
-      request
-        .get("/admin/user/updateIsActivate", {
-          params: {
-            roleId: row.id,
-            isActivate: row.activation == "true" ? 1 : 0,
-          },
-        })
-        .then((res) => {
-          if (res) {
-            this.$message.success("修改成功");
-          } else {
-            this.$message.error("修改失败");
-          }
-        });
-      console.log("row", row);
+    //修改用户的激活状态
+    async handleSwitchChange(row) {
+      const params = {
+        roleId: row.id,
+        isActivate: row.activation == "true" ? 1 : 0,
+      };
+      const res = await updateIsActivate(params);
+      if (res.code == 200) {
+        if (res.data) {
+          this.$message.success("修改成功");
+        } else {
+          this.$message.error("修改失败");
+        }
+      }
     },
-    getsomeList() {
-      request.get("/admin/classs/getClassList", {}).then((res) => {
-        this.classIds = res;
-      });
-      request.get("/admin/classs/getGradeList", {}).then((res) => {
-        this.grades = res;
-      });
-      request.get("/admin/major/getMajorList", {}).then((res) => {
-        this.majors = res;
-      });
+    // 获取班级、年级、专业等数据
+    async getsomeList() {
+      const res1 = await getClassList();
+      const res2 = await getGradeList();
+      const res3 = await getMajorList();
+      if (res1.code == 200) {
+        this.classIds = res1.data;
+      }
+      if (res2.code == 200) {
+        this.grades = res2.data;
+      }
+      if (res3.code == 200) {
+        this.majors = res3.data;
+      }
     },
-    handExcelleImportSuccess(){
+    handExcelleImportSuccess() {
       this.$message.success("导入成功");
       this.load();
     },
-    handleExcelleImportError(){
+    handleExcelleImportError() {
       this.$message.error("导入失败");
       this.load();
     },
@@ -585,7 +583,7 @@ export default {
     //   console.log("导入");
     // },
     //导出接口
-    exportBtn(){
+    exportBtn() {
       // console.log("导出");
       window.open("http://localhost:9001/sms/admin/student/export");
     },
@@ -623,49 +621,31 @@ export default {
       });
     },
     //选择年级
-    choiceGradeFunc() {
-      request
-        .get("/admin/classs/getClassListBygradeId", {
-          params: {
-            gradeId: this.stuform.grade,
-          },
-        })
-        .then((res) => {
-          this.classIds = res;
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+    async choiceGradeFunc() {
+      const params = {
+        gradeId: this.stuform.grade,
+      };
+      const res = await getClassListBygradeId(params);
+      if (res.code == 200) {
+        this.classIds = res.data;
+      }
     },
 
     //选择班级
-    choiceClassFunc() {
+    async choiceClassFunc() {
       //获得专业
-      request
-        .get("/admin/classs/getMajorByclassId", {
-          params: {
+      const params = {
             classId: this.stuform.classId,
-          },
-        })
-        .then((res) => {
-          this.majors = res;
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+          }
+      const res1 = await getMajorByclassId(params)
+      const res2 = await getGradeByclassId(params)
+      if (res1.code == 200) {
+        this.majors = res1.data;
+      }
       //获得班级
-      request
-        .get("/admin/classs/getGradeByclassId", {
-          params: {
-            classId: this.stuform.classId,
-          },
-        })
-        .then((res) => {
-          this.grades = res;
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      if (res2.code == 200) {
+        this.grades = res2.data;
+      }
     },
 
     //选择专业
@@ -682,10 +662,9 @@ export default {
       this.addStudent = false;
       this.load();
     },
-    addStudentsubmit() {
+    async addStudentsubmit() {
       //调用接口提交表单数据
       this.stuform.activation = this.activationIn == true ? 1 : 0;
-
       this.userform.username = this.stuform.id;
       this.userform.password = this.stuform.password;
       this.userform.activation = this.stuform.activation;
@@ -693,70 +672,52 @@ export default {
       this.userform.roleName = 4;
 
       //添加学生
-      request
-        .post("/admin/student", this.stuform)
-        .then((res) => {
-          //添加用户
-          if (res) {
-            request
-              .post("/admin/user/addUser", this.userform)
-              .then((res) => {});
-            this.$message.success("添加成功");
-          } else {
-            this.$message.error("添加失败");
-          }
-          this.stuform = {};
-          this.userform = {};
-          this.addStudent = false;
-          this.load();
-        })
-        .catch((err) => {
-          this.$message.error("添加失败", err);
-        });
+      const res = await saveStudent(this.stuform);
+      if (res.code == 200) {
+        const res1 = await addUser(this.userform);
+        if (res1.code == 200) {
+          this.$message.success("添加成功");
+        } else {
+          this.$message.error("添加失败");
+        }
+        this.stuform = {};
+        this.userform = {};
+        this.addStudent = false;
+        this.load();
+      }
     },
-    delStudent(id) {
-      request
-        .delete("/admin/student/" + id)
-        .then((res) => {
-          if (res) {
-            request
-              .delete("/admin/user/" + id)
-              .then((res) => {
-                if (res) {
-                  this.$message.success("删除用户成功");
-                }
-              })
-              .catch((err) => {
-                console.log("删除用户失败", err);
-              });
-          }
-          this.$message.success("删除学生成功");
-        })
-        .catch((err) => {
-          this.$message.success("删除学生失败", err);
-        });
+    //删除学生
+    async delStudent(id) {
+
+      const res = await removeStudent(id)
+      console.log(res);
+      if(res.code == 200){
+        const res1 = await removeUser(id)
+        if(res1.code == 200){
+          this.$message.success("删除成功");
+        }else{
+          this.$message.error("删除失败");
+        }
+      }
+
       this.load();
     },
-    updatastudentfunc(row) {
+    async updatastudentfunc(row) {
       //获取用户信息
-      request
-        .get("/admin/user/getUser", {
-          params: {
-            id: row.id,
-          },
-        })
-        .then((res) => {
-          this.stuform = row;
-          this.stuform.id = res.username;
-          this.stuform.password = res.password;
-          this.stuform.activation = res.activation;
-          this.activationIn = this.stuform.activation == 1 ? true : false;
-          this.stuform.id = res.roleId;
-          this.userform.roleName = res.roleName;
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      const params = {
+        id: row.id,
+      };
+      const res = await getUser(params);
+      if (res.code == 200) {
+        this.stuform = row;
+        this.stuform.id = res.data.username;
+        this.stuform.password = res.data.password;
+        this.stuform.activation = res.data.activation;
+        this.activationIn = this.stuform.activation == 1 ? true : false;
+        this.stuform.id = res.data.roleId;
+        this.userform.roleName = res.data.roleName;
+      }
+      console.log(this.stuform);
 
       this.updataStudent = true;
     },
@@ -766,30 +727,25 @@ export default {
       this.updataStudent = false;
       this.load();
     },
-    updatastudentsubmit() {
+    async updatastudentsubmit() {
       this.stuform.activation = this.activationIn == true ? 1 : 0;
       this.userform.username = this.stuform.id;
       this.userform.password = this.stuform.password;
       this.userform.activation = this.stuform.activation;
       this.userform.roleId = this.stuform.id;
       this.userform.roleName = 4;
-      request
-        .post("/admin/student/updata", this.stuform)
-        .then((res) => {
-          if (res) {
-            request
-              .post("/admin/user/updataUser", this.userform)
-              .then((res) => {});
-            this.$message.success("修改成功");
-          } else {
-            this.$message.error("修改失败");
-          }
-          this.updatastudentsubmitoff();
-        })
-        .catch((err) => {
-          this.$message.error("修改失败", err);
-        });
+      const res = await updatastudent(this.stuform)
+      if(res.code == 200){
+        const res1 = await updataUser(this.userform)
+        if(res1.code == 200){
+          this.$message.success("修改成功");
+        }else{
+          this.$message.error("修改失败");
+        }
+        this.updatastudentsubmitoff();
+      }
       this.updataStudent = false;
+
     },
     handleSearch() {
       this.searchString = "";
