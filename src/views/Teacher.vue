@@ -8,9 +8,11 @@
         :max="3"
         :min="1"
       >
-        <el-checkbox v-for="search in searchs" :label="search" :key="search">{{
-          search
-        }}</el-checkbox>
+        <el-checkbox
+          v-for="search in searchs"
+          :label="search"
+          :key="search"
+        ></el-checkbox>
       </el-checkbox-group>
     </div>
 
@@ -54,16 +56,6 @@
               ></el-option>
             </el-select>
           </div>
-          <div v-else-if="check === searchs[6]">
-            <el-select v-model="searchContent[index]" placeholder="请选择专业">
-              <el-option
-                v-for="(item, index) in majors"
-                :key="index"
-                :label="item"
-                :value="item"
-              ></el-option>
-            </el-select>
-          </div>
           <el-input
             v-else
             v-model="searchContent[index]"
@@ -80,7 +72,7 @@
 
       <!-- 功能菜单 -->
       <div style="position: absolute; right: 0px; top: 0px">
-        <el-button type="primary" @click="addStudentFunc"
+        <el-button type="primary" @click="addTeacherFunc"
           >新增 <i class="el-icon-circle-plus-outline"></i
         ></el-button>
         <el-popconfirm
@@ -98,7 +90,7 @@
         </el-popconfirm>
 
         <el-upload
-          action="http://localhost:9001/sms/admin/student/import"
+          action="http://localhost:9001/sms/admin/teacher/import"
           style="display: inline-block"
           :show-file-list="false"
           accept=".xlsx"
@@ -117,75 +109,69 @@
     </div>
     <!-- 搜索end -->
 
-    <!-- 学生管理 -->
-    <el-table
-      :data="tableData"
-      border
-      stripe
-      @selection-change="handleSelectionChange"
-    >
-      <el-table-column type="selection" width="55"> </el-table-column>
-      <el-table-column prop="id" label="学号" width="140"></el-table-column>
-      <el-table-column prop="name" label="姓名" width="100"></el-table-column>
-      <el-table-column prop="gender" label="性别" width="60"> </el-table-column>
-      <el-table-column prop="birthday" label="出生日期" width="120">
-      </el-table-column>
-      <el-table-column prop="grade" label="年级" width="80"> </el-table-column>
-      <el-table-column prop="classId" label="班级" width="120">
-      </el-table-column>
-      <el-table-column prop="major" label="专业" width="160"> </el-table-column>
-      <el-table-column prop="email" label="邮箱" width="200"> </el-table-column>
-      <el-table-column prop="phone" label="手机号" width="140">
-      </el-table-column>
-      <el-table-column prop="address" label="地址" width="200">
-      </el-table-column>
-      <el-table-column prop="activation" label="是否激活" width="120">
-        <template slot-scope="scope">
-          <el-switch
-            v-model="scope.row.activation"
-            active-color="#13ce66"
-            inactive-color="#ff4949"
-            active-value="true"
-            inactive-value="false"
-            @change="handleSwitchChange(scope.row)"
-          >
-          </el-switch>
-        </template>
-      </el-table-column>
-      <el-table-column label="操作">
-        <template slot-scope="scope">
-          <el-button
-            type="primary"
-            size="mini"
-            @click="updatastudentfunc(scope.row)"
-            >编辑</el-button
-          >
-          <!-- <el-button type="primary" icon="el-icon-edit" @click="updatastudentfunc(scope.row)" circle></el-button> -->
-          <el-popconfirm
-            style="margin-left: 10px"
-            confirm-button-text="确定"
-            cancel-button-text="再想想"
-            icon="el-icon-info"
-            icon-color="red"
-            title="确定删除吗？"
-            @confirm="delStudent(scope.row.id)"
-          >
-            <el-button type="danger" size="mini" slot="reference"
-              >删除</el-button
-            >
-            <!-- <el-button type="danger" slot="reference" icon="el-icon-delete" circle></el-button> -->
-          </el-popconfirm>
-        </template>
-      </el-table-column>
-    </el-table>
+    <!-- 教师管理 -->
 
-    <!-- 分页 -->
+    <el-row>
+      <el-col
+        :span="4"
+        v-for="(item, index) in tableData"
+        :key="index"
+        :offset="index % 5 == 0 ? 0 : 1"
+      >
+        <el-card :body-style="{ padding: '0px' }" shadow="hover">
+          <el-checkbox
+            id="myCheckbox"
+            v-model="selectedId"
+            :label="item.id"
+            multiple
+            style="position: absolute; top: -3px"
+          >
+            <label for="myCheckbox" style="display: none"></label>
+          </el-checkbox>
+          <img
+            src="../image/user.jpg"
+            class="teaAvatar"
+          />
+          <div style="padding: 14px; position: relative">
+            <p>姓名：{{ item.name }}</p>
+            <p>性别：{{ item.gender }}</p>
+            <p>年龄：{{ age(item.birthday) }}</p>
+            <p>教职工号：{{ item.id }}</p>
+            <div class="bottom_clearfix">
+              <el-button
+                type="primary"
+                icon="el-icon-edit"
+                circle
+                @click="updataTeacherfunc(item)"
+              ></el-button>
+              <el-popconfirm
+                style="margin: 0 0 0 5px"
+                confirm-button-text="确定"
+                cancel-button-text="再想想"
+                icon="el-icon-info"
+                icon-color="red"
+                title="确定删除吗？"
+                @confirm="delTeacher(item.id)"
+              >
+                <el-button
+                  type="danger"
+                  slot="reference"
+                  icon="el-icon-delete"
+                  circle
+                ></el-button>
+              </el-popconfirm>
+            </div>
+          </div>
+        </el-card>
+      </el-col>
+    </el-row>
+
     <div style="padding: 10px 0">
       <el-pagination
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
         :current-page="pageNum"
-        :page-sizes="[2, 5, 10, 20]"
+        :page-sizes="[5, 10, 15, 20]"
         :page-size="pageSize"
         layout="total, sizes, prev, pager, next, jumper"
         :total="total"
@@ -195,15 +181,15 @@
 
     <!-- 新增表单 -->
 
-    <el-dialog title="新增学生" :visible.sync="addStudent">
-      <el-form ref="stuform" :model="stuform" label-width="80px">
-        <el-form-item label="学生学号">
-          <el-input v-model="stuform.id" placeholder="请输入学号"></el-input>
+    <el-dialog title="新增教师" :visible.sync="addTeacher">
+      <el-form ref="teaform" :model="teaform" label-width="80px">
+        <el-form-item label="教职工号">
+          <el-input v-model="teaform.id" placeholder="请输入学号"></el-input>
         </el-form-item>
 
         <el-form-item label="用户密码">
           <el-input
-            v-model="stuform.password"
+            v-model="teaform.password"
             placeholder="请输入密码"
           ></el-input>
         </el-form-item>
@@ -213,11 +199,11 @@
         </el-form-item>
 
         <el-form-item label="姓名">
-          <el-input v-model="stuform.name" placeholder="请输入姓名"></el-input>
+          <el-input v-model="teaform.name" placeholder="请输入姓名"></el-input>
         </el-form-item>
 
         <el-form-item label="性别">
-          <el-radio-group v-model="stuform.gender">
+          <el-radio-group v-model="teaform.gender">
             <el-radio label="男"></el-radio>
             <el-radio label="女"></el-radio>
           </el-radio-group>
@@ -228,7 +214,7 @@
             <el-date-picker
               type="date"
               placeholder="选择日期"
-              v-model="stuform.birthday"
+              v-model="teaform.birthday"
               style="width: 100%"
             ></el-date-picker>
           </el-col>
@@ -236,7 +222,7 @@
 
         <el-form-item label="年级">
           <el-select
-            v-model="stuform.grade"
+            v-model="teaform.grade"
             placeholder="请选择年级"
             @change="choiceGradeFunc"
           >
@@ -245,26 +231,14 @@
               :key="index"
               :label="item"
               :value="item"
-              :default-value="stuform.grade"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-
-        <el-form-item label="专业">
-          <el-select v-model="stuform.major" placeholder="请选择专业">
-            <el-option
-              v-for="(item, index) in majors"
-              :key="index"
-              :label="item"
-              :value="item"
-              :default-value="stuform.major"
+              :default-value="teaform.grade"
             ></el-option>
           </el-select>
         </el-form-item>
 
         <el-form-item label="班级">
           <el-select
-            v-model="stuform.classId"
+            v-model="teaform.classId"
             placeholder="请选择班级"
             @change="choiceClassFunc"
           >
@@ -273,7 +247,7 @@
               :key="index"
               :label="item"
               :value="item"
-              :default-value="stuform.classId"
+              :default-value="teaform.classId"
             ></el-option>
           </el-select>
         </el-form-item>
@@ -290,12 +264,12 @@
             },
           ]"
         >
-          <el-input v-model="stuform.email" placeholder="请输入邮箱"></el-input>
+          <el-input v-model="teaform.email" placeholder="请输入邮箱"></el-input>
         </el-form-item>
 
         <el-form-item label="手机号" prop="phone">
           <el-input
-            v-model="stuform.phone"
+            v-model="teaform.phone"
             placeholder="请输入手机号"
           ></el-input>
         </el-form-item>
@@ -303,34 +277,34 @@
         <!-- 地址 -->
         <el-form-item label="地址">
           <el-input
-            v-model="stuform.address"
+            v-model="teaform.address"
             placeholder="请输入地址"
           ></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="addStudentsubmitoff">取 消</el-button>
-        <el-button type="primary" @click="addStudentsubmit">确 定</el-button>
+        <el-button @click="addTeachersubmitoff">取 消</el-button>
+        <el-button type="primary" @click="addTeachersubmit">确 定</el-button>
       </div>
     </el-dialog>
 
-    <!-- 修改学生信息 -->
-    <el-dialog title="修改学生信息" :visible.sync="updataStudent">
-      <el-form ref="stuform" :model="stuform" label-width="80px">
-        <el-form-item label="学生学号">
+    <!-- 修改教师信息 -->
+    <el-dialog title="修改教师信息" :visible.sync="updataTeacher">
+      <el-form ref="teaform" :model="teaform" label-width="80px">
+        <el-form-item label="教师学号">
           <el-input
-            v-model="stuform.id"
-            placeholder="请输入学号"
+            v-model="teaform.id"
+            placeholder="请输入教职工号"
             disabled="true"
           ></el-input>
         </el-form-item>
 
         <el-form-item label="用户密码">
           <el-input
-            v-model="stuform.password"
+            v-model="teaform.password"
             placeholder="请输入密码"
             type="password"
-            v-model.lazy="stuform.password"
+            v-model.lazy="teaform.password"
           ></el-input>
         </el-form-item>
 
@@ -339,11 +313,11 @@
         </el-form-item>
 
         <el-form-item label="姓名">
-          <el-input v-model="stuform.name" placeholder="请输入姓名"></el-input>
+          <el-input v-model="teaform.name" placeholder="请输入姓名"></el-input>
         </el-form-item>
 
         <el-form-item label="性别">
-          <el-radio-group v-model="stuform.gender">
+          <el-radio-group v-model="teaform.gender">
             <el-radio label="男"></el-radio>
             <el-radio label="女"></el-radio>
           </el-radio-group>
@@ -354,7 +328,7 @@
             <el-date-picker
               type="date"
               placeholder="选择日期"
-              v-model="stuform.birthday"
+              v-model="teaform.birthday"
               style="width: 100%"
             ></el-date-picker>
           </el-col>
@@ -362,7 +336,7 @@
 
         <el-form-item label="年级">
           <el-select
-            v-model="stuform.grade"
+            v-model="teaform.grade"
             placeholder="请选择年级"
             @change="choiceGradeFunc"
           >
@@ -371,26 +345,14 @@
               :key="index"
               :label="item"
               :value="item"
-              :default-value="stuform.grade"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-
-        <el-form-item label="专业">
-          <el-select v-model="stuform.major" placeholder="请选择专业">
-            <el-option
-              v-for="(item, index) in majors"
-              :key="index"
-              :label="item"
-              :value="item"
-              :default-value="stuform.major"
+              :default-value="teaform.grade"
             ></el-option>
           </el-select>
         </el-form-item>
 
         <el-form-item label="班级">
           <el-select
-            v-model="stuform.classId"
+            v-model="teaform.classId"
             placeholder="请选择班级"
             @change="choiceClassFunc"
           >
@@ -399,7 +361,7 @@
               :key="index"
               :label="item"
               :value="item"
-              :default-value="stuform.classId"
+              :default-value="teaform.classId"
             ></el-option>
           </el-select>
         </el-form-item>
@@ -416,12 +378,12 @@
             },
           ]"
         >
-          <el-input v-model="stuform.email" placeholder="请输入邮箱"></el-input>
+          <el-input v-model="teaform.email" placeholder="请输入邮箱"></el-input>
         </el-form-item>
 
         <el-form-item label="手机号" prop="phone">
           <el-input
-            v-model="stuform.phone"
+            v-model="teaform.phone"
             placeholder="请输入手机号"
           ></el-input>
         </el-form-item>
@@ -429,28 +391,44 @@
         <!-- 地址 -->
         <el-form-item label="地址">
           <el-input
-            v-model="stuform.address"
+            v-model="teaform.address"
             placeholder="请输入地址"
           ></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="updatastudentsubmitoff">取 消</el-button>
-        <el-button type="primary" @click="updatastudentsubmit">确 定</el-button>
+        <el-button @click="updataTeachersubmitoff">取 消</el-button>
+        <el-button type="primary" @click="updataTeachersubmit">确 定</el-button>
       </div>
     </el-dialog>
   </div>
 </template>
-
+  
 <script>
 import request from "../utils/request";
 import moment from "moment";
-import { getStudentPage,saveStudent,removeStudent,updatastudent} from "@/api/student";
-import { getUser, updateIsActivate ,addUser,removeUser,updataUser} from "@/api/user";
-import { getClassList, getGradeList, getClassListBygradeId,getMajorByclassId,getGradeByclassId } from "@/api/class";
-import { getMajorList } from "@/api/major";
+import {
+  getTeacherPage,
+  saveTeacher,
+  removeTeacher,
+  updatateacher,
+} from "@/api/teacher";
+import {
+  getUser,
+  updateIsActivate,
+  addUser,
+  removeUser,
+  updataUser,
+} from "@/api/user";
+import {
+  getClassList,
+  getGradeList,
+  getClassListBygradeId,
+  getMajorByclassId,
+  getGradeByclassId,
+} from "@/api/class";
 export default {
-  name: "Student",
+  name: "Teacher",
   data() {
     const searchOptions = [
       "学号",
@@ -459,7 +437,6 @@ export default {
       "出生日期",
       "年级",
       "班级",
-      "专业",
       "邮箱",
       "手机号",
       "地址",
@@ -468,16 +445,16 @@ export default {
       tableData: [],
       total: 0,
       pageNum: 1,
-      pageSize: 2,
+      pageSize: 5,
       checkedsearchs: ["学号"], //选择的条件
       searchs: searchOptions,
       searchContent: [], //输入的条件
       searchString: "",
-      addStudent: false, //新增学生弹框
-      updataStudent: false, //修改学生弹窗
+      addTeacher: false, //新增教师弹框
+      updataTeacher: false, //修改教师弹窗
       activationIn: false, //激活
       selectedId: [], //选中的列表id
-      stuform: {
+      teaform: {
         id: "",
         password: "",
         activation: 0,
@@ -519,12 +496,12 @@ export default {
         pageSize: this.pageSize,
         searchString: this.searchString,
       };
-      const res = await getStudentPage(params);
+      const res = await getTeacherPage(params);
       if (res.code == 200) {
         this.tableData = res.data.records;
         this.total = res.data.total;
         this.tableData.forEach((item, index) => {
-        this.getactive(item);
+          this.getactive(item);
         });
       }
     },
@@ -538,6 +515,20 @@ export default {
       if (res.code == 200) {
         item.activation = res.data.activation == 1 ? "true" : "false";
       }
+    },
+    //通过生日获得年龄
+    age(birthday) {
+      const birthDate = new Date(birthday);
+      const currentDate = new Date();
+      const age = currentDate.getFullYear() - birthDate.getFullYear();
+      const monthDifference = currentDate.getMonth() - birthDate.getMonth();
+      if (
+        monthDifference < 0 ||
+        (monthDifference === 0 && currentDate.getDate() < birthDate.getDate())
+      ) {
+        return age - 1;
+      }
+      return age;
     },
 
     //修改用户的激活状态
@@ -559,15 +550,11 @@ export default {
     async getsomeList() {
       const res1 = await getClassList();
       const res2 = await getGradeList();
-      const res3 = await getMajorList();
       if (res1.code == 200) {
         this.classIds = res1.data;
       }
       if (res2.code == 200) {
         this.grades = res2.data;
-      }
-      if (res3.code == 200) {
-        this.majors = res3.data;
       }
     },
     handExcelleImportSuccess() {
@@ -585,7 +572,7 @@ export default {
     //导出接口
     exportBtn() {
       // console.log("导出");
-      window.open("http://localhost:9001/sms/admin/student/export");
+      window.open("http://localhost:9001/sms/admin/teacher/export");
     },
     reset() {
       this.handlecheckedsearchsChange();
@@ -608,22 +595,16 @@ export default {
       this.searchContent = [];
     },
 
-    //批量选中
-    handleSelectionChange(val) {
-      // [{},{}] =>[1,2,3]
-      this.selectedId = val.map((element) => element.id);
-    },
-
     //批量删除
     batchDeletion() {
       this.selectedId.forEach((id) => {
-        this.delStudent(id);
+        this.delTeacher(id);
       });
     },
     //选择年级
     async choiceGradeFunc() {
       const params = {
-        gradeId: this.stuform.grade,
+        gradeId: this.teaform.grade,
       };
       const res = await getClassListBygradeId(params);
       if (res.code == 200) {
@@ -635,10 +616,10 @@ export default {
     async choiceClassFunc() {
       //获得专业
       const params = {
-            classId: this.stuform.classId,
-          }
-      const res1 = await getMajorByclassId(params)
-      const res2 = await getGradeByclassId(params)
+        classId: this.teaform.classId,
+      };
+      const res1 = await getMajorByclassId(params);
+      const res2 = await getGradeByclassId(params);
       if (res1.code == 200) {
         this.majors = res1.data;
       }
@@ -649,30 +630,30 @@ export default {
     },
 
     //选择专业
-    addStudentFunc() {
-      this.stuform = {};
+    addTeacherFunc() {
+      this.teaform = {};
       //调用接口获得年级、班级、专业列表
       this.getsomeList();
 
-      this.addStudent = true;
+      this.addTeacher = true;
     },
-    addStudentsubmitoff() {
-      this.stuform = {};
+    addTeachersubmitoff() {
+      this.teaform = {};
       this.userform = {};
-      this.addStudent = false;
+      this.addTeacher = false;
       this.load();
     },
-    async addStudentsubmit() {
+    async addTeachersubmit() {
       //调用接口提交表单数据
-      this.stuform.activation = this.activationIn == true ? 1 : 0;
-      this.userform.username = this.stuform.id;
-      this.userform.password = this.stuform.password;
-      this.userform.activation = this.stuform.activation;
-      this.userform.roleId = this.stuform.id;
-      this.userform.roleName = 4;
+      this.teaform.activation = this.activationIn == true ? 1 : 0;
+      this.userform.username = this.teaform.id;
+      this.userform.password = this.teaform.password;
+      this.userform.activation = this.teaform.activation;
+      this.userform.roleId = this.teaform.id;
+      this.userform.roleName = 3;
 
-      //添加学生
-      const res = await saveStudent(this.stuform);
+      //添加教师
+      const res = await saveTeacher(this.teaform);
       if (res.code == 200) {
         const res1 = await addUser(this.userform);
         if (res1.code == 200) {
@@ -680,72 +661,70 @@ export default {
         } else {
           this.$message.error("添加失败");
         }
-        this.stuform = {};
+        this.teaform = {};
         this.userform = {};
-        this.addStudent = false;
+        this.addTeacher = false;
         this.load();
       }
     },
-    //删除学生
-    async delStudent(id) {
-
-      const res = await removeStudent(id)
-      if(res.code == 200){
-        const res1 = await removeUser(id)
-        if(res1.code == 200){
+    //删除教师
+    async delTeacher(id) {
+      // 调用删除接口，传入id参数
+      const res = await removeTeacher(id);
+      if (res.code == 200) {
+        const res1 = await removeUser(id);
+        if (res1.code == 200) {
           this.$message.success("删除成功");
-        }else{
+        } else {
           this.$message.error("删除失败");
         }
       }
-
       this.load();
     },
-    async updatastudentfunc(row) {
+    async updataTeacherfunc(row) {
       //获取用户信息
       const params = {
         id: row.id,
       };
       const res = await getUser(params);
       if (res.code == 200) {
-        this.stuform = row;
-        this.stuform.id = res.data.username;
-        this.stuform.password = res.data.password;
-        this.stuform.activation = res.data.activation;
-        this.activationIn = this.stuform.activation == 1 ? true : false;
-        this.stuform.id = res.data.roleId;
+        this.teaform = row;
+        this.teaform.id = res.data.username;
+        this.teaform.password = res.data.password;
+        this.teaform.activation = res.data.activation;
+        this.activationIn = this.teaform.activation == 1 ? true : false;
+        this.teaform.id = res.data.roleId;
         this.userform.roleName = res.data.roleName;
       }
       //获取激活信息
-      this.getactive(row)
-      
-      this.updataStudent = true;
+      this.getactive(row);
+
+      this.updataTeacher = true;
     },
-    updatastudentsubmitoff() {
-      this.stuform = {};
+    updataTeachersubmitoff() {
+      this.teaform = {};
       this.userform = {};
-      this.updataStudent = false;
+      this.updataTeacher = false;
       this.load();
     },
-    async updatastudentsubmit() {
-      this.stuform.activation = this.activationIn == true ? 1 : 0;
-      this.userform.username = this.stuform.id;
-      this.userform.password = this.stuform.password;
-      this.userform.activation = this.stuform.activation;
-      this.userform.roleId = this.stuform.id;
-      this.userform.roleName = 4;
-      const res = await updatastudent(this.stuform)
-      if(res.code == 200){
-        const res1 = await updataUser(this.userform)
-        if(res1.code == 200){
+    async updataTeachersubmit() {
+      this.teaform.activation = this.activationIn == true ? 1 : 0;
+      this.userform.username = this.teaform.id;
+      this.userform.password = this.teaform.password;
+      this.userform.activation = this.teaform.activation;
+      this.userform.roleId = this.teaform.id;
+      this.userform.roleName = 3;
+      const res = await updatateacher(this.teaform);
+      if (res.code == 200) {
+        const res1 = await updataUser(this.userform);
+        if (res1.code == 200) {
           this.$message.success("修改成功");
-        }else{
+        } else {
           this.$message.error("修改失败");
         }
-        this.updatastudentsubmitoff();
+        this.updataTeachersubmitoff();
       }
-      this.updataStudent = false;
-
+      this.updataTeacher = false;
     },
     handleSearch() {
       this.searchString = "";
@@ -791,21 +770,15 @@ export default {
             this.searchString +=
               this.searchContent[index] === undefined
                 ? ""
-                : "&major=" + this.searchContent[index];
+                : "&email=" + this.searchContent[index];
             break;
           case this.searchs[7]:
             this.searchString +=
               this.searchContent[index] === undefined
                 ? ""
-                : "&email=" + this.searchContent[index];
-            break;
-          case this.searchs[8]:
-            this.searchString +=
-              this.searchContent[index] === undefined
-                ? ""
                 : "&phone=" + this.searchContent[index];
             break;
-          case this.searchs[9]:
+          case this.searchs[8]:
             this.searchString +=
               this.searchContent[index] === undefined
                 ? ""
@@ -818,6 +791,16 @@ export default {
   },
 };
 </script>
-
+  
 <style scoped>
+.bottom_clearfix {
+  display: flex;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  padding: 10px;
+}
+.teaAvatar {
+  width: 100%;
+}
 </style>

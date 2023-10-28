@@ -35,8 +35,8 @@
       </template>
       <el-menu-item-group>
         <el-menu-item index="/student">学生管理</el-menu-item>
-        <el-menu-item index="1-2">教师管理</el-menu-item>
-        <el-menu-item index="1-3">管理员管理</el-menu-item>
+        <el-menu-item index="/teacher">教师管理</el-menu-item>
+        <el-menu-item index="/admin">管理员管理</el-menu-item>
       </el-menu-item-group>
     </el-submenu>
     <el-submenu index="2">

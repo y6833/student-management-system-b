@@ -8,19 +8,27 @@ const routes = [
   {
     path: '/',
     component: () => import('../views/Manage.vue'),
-    redirect:"/home",
+    redirect: "/home",
     children: [
       {
         path: 'student',
         name: '学生管理',
         component: () => import('../views/Student.vue'),
-      },{
+      }, {
+        path: 'teacher',
+        name: '教师管理',
+        component: () => import('../views/Teacher.vue'),
+      }, {
+        path: 'admin',
+        name: '管理员管理',
+        component: () => import('../views/Admin.vue'),
+      }, {
         path: 'home',
         name: '首页',
         component: () => import('../views/Home.vue'),
       }
     ]
-  },{
+  }, {
     path: '/login',
     name: 'login',
     component: () => import('../views/Login.vue')
