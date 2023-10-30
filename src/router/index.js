@@ -13,15 +13,19 @@ const routes = [
       {
         path: 'student',
         name: '学生管理',
-        component: () => import('../views/Student.vue'),
+        component: () => import('../views/UserManagement/Student.vue'),
       }, {
         path: 'teacher',
         name: '教师管理',
-        component: () => import('../views/Teacher.vue'),
+        component: () => import('../views/UserManagement/Teacher.vue'),
       }, {
         path: 'admin',
         name: '管理员管理',
-        component: () => import('../views/Admin.vue'),
+        component: () => import('../views/UserManagement/Admin.vue'),
+      },, {
+        path: 'person',
+        name: '个人信息',
+        component: () => import('../views/UserManagement/Person.vue'),
       }, {
         path: 'home',
         name: '首页',

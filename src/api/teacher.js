@@ -1,6 +1,6 @@
 import request from '@/utils/request';
 
-// 获取学生信息
+// 获取教师信息
 export function getTeacherPage(params) {
     return request({
         'url': '/admin/teacher/page',
@@ -9,7 +9,7 @@ export function getTeacherPage(params) {
     })
 }
 
-//添加学生
+//添加教师
 export function saveTeacher(data) {
     return request({
         'url': '/admin/teacher',
@@ -18,7 +18,7 @@ export function saveTeacher(data) {
     })
 }
 
-//删除学生
+//删除教师
 
 export function removeTeacher(id) {
     return request({
@@ -28,11 +28,19 @@ export function removeTeacher(id) {
     })
 }
 
-//修改学生
+//修改教师
 export function updatateacher(data) {
     return request({
         'url': '/admin/teacher/updata',
         'method': 'POST',
         data
+    })
+}
+
+//根据id获取教师信息
+export function getTeacherByRoleId(id) {
+    return request({
+        'url': `/admin/admin/getTeacherByRoleId/${id}`,
+        'method': 'GET',
     })
 }

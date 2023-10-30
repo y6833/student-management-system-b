@@ -68,9 +68,12 @@ export default {
           } else {
             const res = await loginInfo(this.user)
             if (res.code == 200) {
+              localStorage.setItem("user", JSON.stringify(res.data)); //将用户信息存入浏览器
+              console.log(res);
                 this.$router.push("/home");
+                this.$message.success("登录成功");
               } else {
-                this.$message.error("账户或密码错误！！！");
+                this.$message.error(res.msg);
               }
 
           }
