@@ -1,4 +1,5 @@
 import axios from 'axios';
+import ElementUI from 'element-ui';
 
 // 创建axios实例
 const request = axios.create({
@@ -11,6 +12,10 @@ request.interceptors.request.use(
   config => {
     // 在发送请求前做一些处理，例如添加token等
     config.headers['Content-Type'] = 'application/json;charset=UTF-8';
+    let user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : {};
+    if (user) {
+      config.headers['token'] = user.token; //设置请求头
+    }
     return config;
   },
   error => {
@@ -30,6 +35,14 @@ request.interceptors.response.use(
     }
     if (typeof res === 'string') {
       res = res ? JSON.parse(res) : res
+    }
+    //当权限验证不通过的时候给出提示
+    if (res.code === '401') {
+      ElementUI.Message({
+        message: res.msg,
+        type: 'error'
+      });
+
     }
     return res;
   },

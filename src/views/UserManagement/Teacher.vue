@@ -128,7 +128,7 @@
           >
             <label for="myCheckbox" style="display: none"></label>
           </el-checkbox>
-          <el-image class="teaAvatar" :src="defaultAvatar" :preview-src-list="[defaultAvatar]" :fit="fit"></el-image>
+          <el-image class="teaAvatar" :src="defaultAvatar" :preview-src-list="[defaultAvatar]" fit="fill"></el-image>
           <div style="padding: 14px; position: relative">
             <p>姓名：{{ item.name }}</p>
             <p>性别：{{ item.gender }}</p>
