@@ -7,8 +7,7 @@
         box-shadow: 2px 0 6px rgb(0 21 41 / 35%);
       "
     >
-      <Aside :isCollapse="isCollapse" :logoTextShow="logoTextShow"/>
-
+      <Aside :isCollapse="isCollapse" :logoTextShow="logoTextShow" />
     </el-aside>
 
     <el-container>
@@ -17,15 +16,19 @@
           background-color: #fff;
           font-size: 12px;
           border-bottom: 1px solid #ccc;
-
         "
       >
-        <Header :collapseBtnClass="collapseBtnClass" :collapse="isCollapse" @callParentFunction="handleChildFunctionCall" />
+        <Header
+        v-if="headshow"
+          :collapseBtnClass="collapseBtnClass"
+          :collapse="isCollapse"
+          @callParentFunction="handleChildFunctionCall"
+        />
       </el-header>
 
       <el-main>
         <!-- 当前页面的子路由会在rute-view里面展示 -->
-          <router-view />
+        <router-view @refreshHeader="refreshHeader" />
       </el-main>
     </el-container>
   </el-container>
@@ -42,20 +45,17 @@
 }
 </style>
 <script>
-
-import Aside from '../components/Aside.vue';
-import Header from '../components/Header.vue';
+import Aside from "../components/Aside.vue";
+import Header from "../components/Header.vue";
 export default {
-  components: { Aside,Header },
+  components: { Aside, Header },
   data() {
-
     return {
-
+      headshow: true,
       collapseBtnClass: "el-icon-s-fold",
       isCollapse: false,
       sideWidth: 200,
       logoTextShow: true,
-      
     };
   },
   methods: {
@@ -82,10 +82,18 @@ export default {
         this.logoTextShow = true;
       }
     },
-    handleChildFunctionCall(data){
-      this.collapse()
-    }
-
+    handleChildFunctionCall(data) {
+      this.collapse();
+    },
+    refreshHeader() {
+      //删除节点
+      this.headshow = false;
+      let out = setTimeout(() => {
+        //重新渲染节点
+        this.headshow = true;
+        clearTimeout(out);
+      }, 0);
+    },
   },
 };
 </script>

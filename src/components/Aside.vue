@@ -54,6 +54,7 @@
         <el-menu-item index="2-4">专业管理</el-menu-item>
         <el-menu-item index="2-5">课程管理</el-menu-item>
         <el-menu-item index="2-6">班级管理</el-menu-item>
+        <el-menu-item index="/file">文件管理</el-menu-item>
       </el-menu-item-group>
     </el-submenu>
     <el-submenu index="3">

@@ -42,7 +42,9 @@ request.interceptors.response.use(
         message: res.msg,
         type: 'error'
       });
-
+      setTimeout(() => {
+      window.location.href = '/login';
+      }, 1000);
     }
     return res;
   },

@@ -3,8 +3,20 @@
     <el-card>
       <div class="el-card__body" style="display: flex">
         <div class="UserImage">
-          <el-image class="UserImg" :src="defaultAvatar" :preview-src-list="[defaultAvatar]" fit="fill"></el-image>
-          <el-button>修改照片</el-button>
+          <el-image
+            class="UserImg"
+            :src="userform.avatar || defaultAvatar"
+            :preview-src-list="[userform.avatar || defaultAvatar]"
+            fit="fill"
+          ></el-image>
+          <el-upload
+            action="http://localhost:9001/sms/file/upload"
+            :show-file-list="false"
+            :on-success="updataAvatar"
+            style="display: inline-block"
+          >
+            <el-button>修改照片</el-button>
+          </el-upload>
         </div>
         <div class="UserInformation">
           <el-form
@@ -90,7 +102,7 @@
             </el-form-item>
           </el-form>
           <div slot="footer" class="dialog-footer">
-            <el-button type="primary" @click="personsubmit">修改</el-button>
+            <el-button type="primary" @click="personsubmit">保存</el-button>
           </div>
         </div>
       </div>
@@ -109,7 +121,7 @@ export default {
 
   data() {
     return {
-      defaultAvatar:"http://localhost:8080/img/user.f5801f9b.jpg",
+      defaultAvatar: "http://localhost:8080/img/user.f5801f9b.jpg",
       personform: {
         id: "",
         name: "",
@@ -127,6 +139,7 @@ export default {
         activation: 0,
         roleId: "",
         roleName: 0,
+        avatar: "",
       },
       activationIn: false, //激活
       user: localStorage.getItem("user")
@@ -152,8 +165,10 @@ export default {
       }
       if (res.code == 200) {
         this.personform = res.data;
+        this.userform.avatar = this.user.avatar;
         this.activationIn = this.user.activation == 1 ? true : false;
       }
+      this.refreshHeader();
     },
     async personsubmit() {
       this.userform.username = this.personform.id;
@@ -183,6 +198,16 @@ export default {
       }
       this.getPerson();
     },
+    async updataAvatar(val) {
+      if (val.code == 200) {
+        this.userform.avatar = val.data;
+        this.user.avatar = val.data;
+        localStorage.setItem("user", JSON.stringify(this.user));
+      }
+    },
+    refreshHeader() {
+    this.$emit('refreshHeader');
+  }
   },
 };
 </script>
@@ -212,7 +237,7 @@ export default {
 .UserImg {
   width: 100%;
   height: 100%;
-  margin:20px;
+  margin: 20px;
   opacity: 0.8; /* 降低照片的透明度 */
   box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2); /* 添加阴影效果 */
 }
