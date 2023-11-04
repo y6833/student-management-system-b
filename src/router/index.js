@@ -22,7 +22,13 @@ const routes = [
         path: 'admin',
         name: '管理员管理',
         component: () => import('../views/UserManagement/Admin.vue'),
-      },, {
+      },
+      {
+        path: 'scores',
+        name: '学生成绩管理',
+        component: () => import('../views/TeacherManagement/Scores.vue'),
+      }
+      , {
         path: 'person',
         name: '个人信息',
         component: () => import('../views/UserManagement/Person.vue'),
