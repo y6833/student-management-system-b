@@ -43,3 +43,13 @@ export function addStudentScore(params) {
         params
     })
 }
+
+//删除学生成绩
+export function delStudentScore(params) {
+    return request({
+        'url': '/admin/score/delStudentScore',
+        'method': 'DELETE',
+        params
+    })
+    
+}

@@ -27,16 +27,19 @@
 
           <div class="block" v-else-if="check === searchs[6]">
             <el-date-picker
-              v-model="searchContent[index]"
+              v-model="chooseExamdata"
               type="date"
               placeholder="请选择考试日期"
+              @change="chooseExamdataChange"
+              value-format="yyyy-MM-dd HH:mm:ss"
             >
             </el-date-picker>
           </div>
           <div class="block" v-else-if="check === searchs[7]">
             <el-select
-              v-model="searchContent[index]"
+              v-model="chooseExamname"
               placeholder="请选择考试名称"
+              @change="chooseExamnameChange"
             >
               <el-option
                 v-for="(item, index) in examNames"
@@ -47,7 +50,11 @@
             </el-select>
           </div>
           <div class="block" v-else-if="check === searchs[8]">
-            <el-select v-model="subject" placeholder="请选择科目名称">
+            <el-select
+              v-model="subject"
+              placeholder="请选择科目名称"
+              @change="subjectChange"
+            >
               <el-option
                 v-for="(item, index) in subjects"
                 :key="index"
@@ -270,13 +277,18 @@
       ></el-table-column>
       <el-table-column prop="student.gender" label="性别" width="60">
       </el-table-column>
-      <el-table-column prop="student.birthday" label="出生日期" width="120">
+      <el-table-column prop="examDate" label="考试日期" width="200">
       </el-table-column>
       <el-table-column prop="student.grade" label="年级" width="80">
       </el-table-column>
       <el-table-column prop="student.classId" label="班级" width="120">
       </el-table-column>
-      <el-table-column prop="sum" sortable label="总分" width="160">
+      <el-table-column
+        prop="sum"
+        sortable
+        :label="subject == 'sum' ? '总分' : subject"
+        width="160"
+      >
       </el-table-column>
       <el-table-column
         prop="gradeRanking"
@@ -307,7 +319,7 @@
             icon="el-icon-info"
             icon-color="red"
             title="确定删除吗？"
-            @confirm="delStudent(scope.row.id)"
+            @confirm="delStudentScore(scope.row)"
           >
             <el-button type="danger" size="mini" slot="reference"
               >删除</el-button
@@ -426,6 +438,7 @@ import {
   updataScore,
   getExamList,
   addStudentScore,
+  delStudentScore,
 } from "@/api/scores";
 import { getSubjectList } from "@/api/course";
 import { getMajorList } from "@/api/major";
@@ -464,6 +477,8 @@ export default {
       updataStudent: false, //修改学生弹窗
       activationIn: false, //激活
       selectedId: [], //选中的列表id
+      chooseExamdata: "",
+      chooseExamname: "",
       stuform: {
         id: "",
         password: "",
@@ -491,7 +506,7 @@ export default {
       majors: [], //专业列表
       examNames: [], //考试列表
       subjects: [], //考试科目
-      subject: "", //选中的科目
+      subject: "sum", //选中的科目
       studentList: [],
     };
   },
@@ -517,7 +532,9 @@ export default {
         this.studentList = res.data.data.records;
         const res1 = await getStuScorePage(this.studentList);
         if (res1.code == "200") {
-          this.tableData = res1.data.slice(0, this.pageSize);
+          this.tableData = res1.data;
+          console.log(this.tableData);
+          // this.tableData = res1.data.slice(0, this.pageSize);
           this.handlecomparesXyChange();
         }
         this.total = res.data.total;
@@ -582,8 +599,6 @@ export default {
     //通过学号获取信息
     async getStuById(id) {
       const res = await getStuById(id);
-      console.log(res);
-
       if (res.code == 200) {
         this.stuScore.stuform = res.data;
       }
@@ -600,13 +615,49 @@ export default {
         this.delStudent(id);
       });
     },
+
+    //更具考试科目修改sum值
+    subjectChange() {
+      this.tableData.forEach((item) => {
+        const str = JSON.stringify(item.scores);
+        const map = JSON.parse(str);
+        item.sum = map[this.subject];
+      });
+    },
+    //根据考试日期筛选
+    async chooseExamdataChange() {
+      await this.load();
+      this.tableData = this.tableData.filter(
+        (item) => item.examDate == this.chooseExamdata
+      );
+    },
+    //根据考试名称进行筛选
+    async chooseExamnameChange() {
+      await this.load();
+      this.tableData = this.tableData.filter(
+        (item) => item.examName == this.chooseExamname
+      );
+    },
+    async delStudentScore(row) {
+      const params = {
+        studentId: row.student.id,
+        examName: row.examName,
+      };
+      const res = await delStudentScore(params);
+      if (res.code == 200) {
+        this.$message.success(res.msg);
+      } else {
+        this.$message.error(res.msg);
+      }
+      this.load();
+    },
     //添加学生成绩
     addStudentScoreFunc() {
       this.stuScore = {
         stuform: {},
         scores: {},
       };
-      this.subject = ""
+      this.subject = "";
       //调用接口获得年级、班级、专业列表
       this.getsomeList();
       this.addStudentScore = true;
@@ -620,6 +671,9 @@ export default {
       this.comparesDy = 0;
       this.comparesXy = 0;
       this.compares = 0;
+      this.subject = "sum";
+      this.chooseExamdata = "";
+      this.chooseExamname = "";
       this.handleSearch();
     },
     //选择班级
@@ -641,89 +695,94 @@ export default {
 
     //添加总分
     getsumscores() {
-      this.tableData.forEach((item) => {
-        const str = JSON.stringify(item.scores);
-        const map = JSON.parse(str);
-        item.sum = Object.values(map).reduce((a, b) => a + b, 0);
-      });
+      // this.tableData.forEach((item) => {
+      //   const str = JSON.stringify(item.scores);
+      //   const map = JSON.parse(str);
+      //   item.sum = Object.values(map).reduce((a, b) => a + b, 0);
+      // });
     },
     //通过成绩查询
     handlecomparesXyChange() {
       if (this.comparesIf != "") {
         switch (this.comparesIf) {
           case this.compare[0]:
-            if (this.subject == "") {
-              this.getsumscores();
-              this.tableData = this.tableData.filter(
-                (item) => item.sum >= this.compares
-              );
-            } else {
-              this.tableData.forEach((item) => {
-                const str = JSON.stringify(item.scores);
-                const map = JSON.parse(str);
-                item.sum = map[this.subject];
-              });
-              this.tableData = this.tableData.filter(
-                (item) => item.sum >= this.compares
-              );
-            }
+            // if (this.subject == "") {
+            //   this.getsumscores();
+            //   this.tableData = this.tableData.filter(
+            //     (item) => item.sum >= this.compares
+            //   );
+            // } else {
+            //   this.tableData.forEach((item) => {
+            //     const str = JSON.stringify(item.scores);
+            //     const map = JSON.parse(str);
+            //     item.sum = map[this.subject];
+            //   });
+            this.subjectChange();
+            this.tableData = this.tableData.filter(
+              (item) => item.sum >= this.compares
+            );
+            // }
             break;
           case this.compare[1]:
-            if (this.subject == "") {
-              this.getsumscores();
-              this.tableData = this.tableData.filter(
-                (item) => item.sum == this.compares
-              );
-            } else {
-              this.tableData.forEach((item) => {
-                const str = JSON.stringify(item.scores);
-                const map = JSON.parse(str);
-                item.sum = map[this.subject];
-              });
-              this.tableData = this.tableData.filter(
-                (item) => item.sum == this.compares
-              );
-            }
+            // if (this.subject == "") {
+            //   this.getsumscores();
+            //   this.tableData = this.tableData.filter(
+            //     (item) => item.sum == this.compares
+            //   );
+            // } else {
+            //   this.tableData.forEach((item) => {
+            //     const str = JSON.stringify(item.scores);
+            //     const map = JSON.parse(str);
+            //     item.sum = map[this.subject];
+            //   });
+            this.subjectChange();
+            this.tableData = this.tableData.filter(
+              (item) => item.sum == this.compares
+            );
+            // }
             break;
           case this.compare[2]:
-            if (this.subject == "") {
-              this.getsumscores();
-              this.tableData = this.tableData.filter(
-                (item) => item.sum <= this.compares
-              );
-            } else {
-              this.tableData.forEach((item) => {
-                const str = JSON.stringify(item.scores);
-                const map = JSON.parse(str);
-                item.sum = map[this.subject];
-              });
-              this.tableData = this.tableData.filter(
-                (item) => item.sum <= this.compares
-              );
-            }
+            // if (this.subject == "") {
+            //   this.getsumscores();
+            //   this.tableData = this.tableData.filter(
+            //     (item) => item.sum <= this.compares
+            //   );
+            // } else {
+            //   this.tableData.forEach((item) => {
+            //     const str = JSON.stringify(item.scores);
+            //     const map = JSON.parse(str);
+            //     item.sum = map[this.subject];
+            //   });
+            this.subjectChange();
+            this.tableData = this.tableData.filter(
+              (item) => item.sum <= this.compares
+            );
+            // }
             break;
           case this.compare[3]:
-            if (this.subject == "") {
-              this.getsumscores();
-              this.tableData = this.tableData.filter(
-                (item) =>
-                  item.sum >= this.comparesDy && item.sum <= this.comparesXy
-              );
-            } else {
-              this.tableData.forEach((item) => {
-                const str = JSON.stringify(item.scores);
-                const map = JSON.parse(str);
-                item.sum = map[this.subject];
-              });
-              this.tableData = this.tableData.filter(
-                (item) =>
-                  item.sum >= this.comparesDy && item.sum <= this.comparesXy
-              );
-            }
+            // if (this.subject == "") {
+            //   this.getsumscores();
+            //   this.tableData = this.tableData.filter(
+            //     (item) =>
+            //       item.sum >= this.comparesDy && item.sum <= this.comparesXy
+            //   );
+            // } else {
+            //   this.tableData.forEach((item) => {
+            //     const str = JSON.stringify(item.scores);
+            //     const map = JSON.parse(str);
+            //     item.sum = map[this.subject];
+            //   });
+            this.subjectChange();
+            this.tableData = this.tableData.filter(
+              (item) =>
+                item.sum >= this.comparesDy && item.sum <= this.comparesXy
+            );
+            // }
             break;
         }
       } else {
-        this.getsumscores();
+        // this.getsumscores();
+        this.subjectChange();
       }
     },
     //修改成绩
@@ -756,8 +815,8 @@ export default {
     },
     //添加成绩
     async addStudentScoresubmit() {
-      console.log(this.stuScore.scores[this.subject],this.subject);
-      const str = this.subject + ":" +  this.stuScore.scores[this.subject] 
+      console.log(this.stuScore.scores[this.subject], this.subject);
+      const str = this.subject + ":" + this.stuScore.scores[this.subject];
       const params = {
         studentId: this.stuScore.stuform.id,
         examName: this.stuScore.examName,
@@ -766,7 +825,7 @@ export default {
       const res = await addStudentScore(params);
       if (res.code == 200) {
         this.$message.success("添加成功");
-      }else{
+      } else {
         this.$message.error(res.msg);
       }
       this.addStudentScore = false;
