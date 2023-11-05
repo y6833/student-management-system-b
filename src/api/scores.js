@@ -27,10 +27,19 @@ export function updataScore(params) {
     })
 }
 
-
+//获取考试列表
 export function getExamList() {
     return request({
         'url': '/admin/score/getExamList',
         'method': 'GET',
+    })
+}
+
+//添加学生成绩
+export function addStudentScore(params) {
+    return request({
+        'url': '/admin/score/addStudentScore',
+        'method': 'GET',
+        params
     })
 }

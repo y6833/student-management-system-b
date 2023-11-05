@@ -140,7 +140,7 @@
 
       <!-- 功能菜单 -->
       <div style="position: absolute; right: 0px; top: 0px">
-        <el-button type="primary" @click="addStudentFunc"
+        <el-button type="primary" @click="addStudentScoreFunc"
           >新增 <i class="el-icon-circle-plus-outline"></i
         ></el-button>
         <el-popconfirm
@@ -253,7 +253,7 @@
               </el-form-item>
             </div>
             <div>
-              <RadarChart style="width: 100%; height: 100%;" />
+              <RadarChart style="width: 100%; height: 100%" />
             </div>
           </el-form>
         </template>
@@ -300,7 +300,6 @@
             @click="updatastudentfunc(scope.row)"
             >编辑</el-button
           >
-          <!-- <el-button type="primary" icon="el-icon-edit" @click="updatastudentfunc(scope.row)" circle></el-button> -->
           <el-popconfirm
             style="margin-left: 10px"
             confirm-button-text="确定"
@@ -313,7 +312,6 @@
             <el-button type="danger" size="mini" slot="reference"
               >删除</el-button
             >
-            <!-- <el-button type="danger" slot="reference" icon="el-icon-delete" circle></el-button> -->
           </el-popconfirm>
         </template>
       </el-table-column>
@@ -332,6 +330,70 @@
       >
       </el-pagination>
     </div>
+
+    <!-- 新增学生成绩 -->
+    <el-dialog title="新增学生" :visible.sync="addStudentScore">
+      <el-form ref="stuScore" :model="stuScore" label-width="80px">
+        <el-form-item label="学生学号">
+          <el-input
+            v-model="stuScore.stuform.id"
+            @change="getStuById(stuScore.stuform.id)"
+            placeholder="请输入学号"
+          ></el-input>
+        </el-form-item>
+
+        <el-form-item label="姓名">
+          {{ stuScore.stuform.name }}
+        </el-form-item>
+
+        <el-form-item label="年级">
+          {{ stuScore.stuform.grade }}
+        </el-form-item>
+
+        <el-form-item label="专业">
+          {{ stuScore.stuform.major }}
+        </el-form-item>
+
+        <el-form-item label="班级">
+          {{ stuScore.stuform.classId }}
+        </el-form-item>
+
+        <el-form-item label="考试名称">
+          <el-select v-model="stuScore.examName" placeholder="请选择考试名称">
+            <el-option
+              v-for="(item, index) in examNames"
+              :key="index"
+              :label="item"
+              :value="item"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="成绩">
+          <!-- 选中科目 -->
+          <el-select v-model="subject" placeholder="请选择科目名称">
+            <el-option
+              v-for="(item, index) in subjects"
+              :key="index"
+              :label="item"
+              :value="item"
+            ></el-option>
+          </el-select>
+          <!-- 输入成绩 -->
+          <el-input-number
+            v-model="stuScore.scores[subject]"
+            controls-position="right"
+            :min="0"
+          ></el-input-number>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="addStudentScoresubmitoff">取 消</el-button>
+        <el-button type="primary" @click="addStudentScoresubmit"
+          >确 定</el-button
+        >
+      </div>
+    </el-dialog>
   </div>
 </template>
   
@@ -342,6 +404,7 @@ import {
   saveStudent,
   removeStudent,
   updatastudent,
+  getStuById,
 } from "@/api/student";
 import {
   getUser,
@@ -362,6 +425,7 @@ import {
   getStuScoreList,
   updataScore,
   getExamList,
+  addStudentScore,
 } from "@/api/scores";
 import { getSubjectList } from "@/api/course";
 import { getMajorList } from "@/api/major";
@@ -396,7 +460,7 @@ export default {
       comparesXy: 0,
       compares: 0,
       searchString: "",
-      addStudent: false, //新增学生弹框
+      addStudentScore: false, //新增学生弹框
       updataStudent: false, //修改学生弹窗
       activationIn: false, //激活
       selectedId: [], //选中的列表id
@@ -418,6 +482,7 @@ export default {
         classRanking: 0,
         examDate: "",
         examName: "",
+        scores: {},
         gradeRanking: 0,
         stuform: {},
       },
@@ -510,12 +575,18 @@ export default {
       this.load();
     },
 
-    selectCondition(condition) {
-      this.searchCondition = condition;
-    },
-
     handlecheckedsearchsChange() {
       this.searchContent = [];
+    },
+
+    //通过学号获取信息
+    async getStuById(id) {
+      const res = await getStuById(id);
+      console.log(res);
+
+      if (res.code == 200) {
+        this.stuScore.stuform = res.data;
+      }
     },
 
     //批量选中
@@ -529,102 +600,16 @@ export default {
         this.delStudent(id);
       });
     },
-
-    //选择专业
-    addStudentFunc() {
-      this.stuform = {};
+    //添加学生成绩
+    addStudentScoreFunc() {
+      this.stuScore = {
+        stuform: {},
+        scores: {},
+      };
+      this.subject = ""
       //调用接口获得年级、班级、专业列表
       this.getsomeList();
-
-      this.addStudent = true;
-    },
-    addStudentsubmitoff() {
-      this.stuform = {};
-      this.userform = {};
-      this.addStudent = false;
-      this.load();
-    },
-    async addStudentsubmit() {
-      //调用接口提交表单数据
-      this.stuform.activation = this.activationIn == true ? 1 : 0;
-      this.userform.username = this.stuform.id;
-      this.userform.password = this.stuform.password;
-      this.userform.activation = this.stuform.activation;
-      this.userform.roleId = this.stuform.id;
-      this.userform.roleName = 4;
-      this.stuform.birthday = moment(this.stuform.birthday).add(1, "day");
-
-      //添加学生
-      const res = await saveStudent(this.stuform);
-      if (res.code == 200) {
-        const res1 = await addUser(this.userform);
-        if (res1.code == 200) {
-          this.$message.success("添加成功");
-        } else {
-          this.$message.error("添加失败");
-        }
-        this.stuform = {};
-        this.userform = {};
-        this.addStudent = false;
-        this.load();
-      }
-    },
-    //删除学生
-    async delStudent(id) {
-      const res = await removeStudent(id);
-      if (res.code == 200) {
-        const res1 = await removeUser(id);
-        if (res1.code == 200) {
-          this.$message.success("删除成功");
-        } else {
-          this.$message.error("删除失败");
-        }
-      }
-
-      this.load();
-    },
-    async updatastudentfunc(row) {
-      //获取用户信息
-      const params = {
-        id: row.id,
-      };
-      const res = await getUser(params);
-      if (res.code == 200) {
-        this.stuform = row;
-        this.stuform.id = res.data.username;
-        this.stuform.password = res.data.password;
-        this.stuform.activation = res.data.activation;
-        this.activationIn = this.stuform.activation == 1 ? true : false;
-        this.stuform.id = res.data.roleId;
-        this.userform.roleName = res.data.roleName;
-      }
-      this.updataStudent = true;
-    },
-    updatastudentsubmitoff() {
-      this.stuform = {};
-      this.userform = {};
-      this.updataStudent = false;
-      this.load();
-    },
-    async updatastudentsubmit() {
-      this.stuform.activation = this.activationIn == true ? 1 : 0;
-      this.userform.username = this.stuform.id;
-      this.userform.password = this.stuform.password;
-      this.userform.activation = this.stuform.activation;
-      this.userform.roleId = this.stuform.id;
-      this.stuform.birthday = moment(this.stuform.birthday).add(1, "day");
-      this.userform.roleName = 4;
-      const res = await updatastudent(this.stuform);
-      if (res.code == 200) {
-        const res1 = await updataUser(this.userform);
-        if (res1.code == 200) {
-          this.$message.success("修改成功");
-        } else {
-          this.$message.error("修改失败");
-        }
-        this.updatastudentsubmitoff();
-      }
-      this.updataStudent = false;
+      this.addStudentScore = true;
     },
 
     //重置
@@ -759,6 +744,33 @@ export default {
       if (res.code != 200) {
         this.$message.error("修改失败");
       }
+    },
+    //取消添加成绩
+    addStudentScoresubmitoff() {
+      this.stuScore = {
+        stuform: {},
+        scores: {},
+      };
+      this.addStudentScore = false;
+      this.load();
+    },
+    //添加成绩
+    async addStudentScoresubmit() {
+      console.log(this.stuScore.scores[this.subject],this.subject);
+      const str = this.subject + ":" +  this.stuScore.scores[this.subject] 
+      const params = {
+        studentId: this.stuScore.stuform.id,
+        examName: this.stuScore.examName,
+        score: str,
+      };
+      const res = await addStudentScore(params);
+      if (res.code == 200) {
+        this.$message.success("添加成功");
+      }else{
+        this.$message.error(res.msg);
+      }
+      this.addStudentScore = false;
+      this.load();
     },
     //搜索
     handleSearch() {

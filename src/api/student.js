@@ -36,3 +36,11 @@ export function updatastudent(data) {
         data
     })
 }
+
+//通过id获取学生
+export function getStuById(id) {
+    return request({
+        'url': `/admin/student/${id}`,
+        'method': 'GET',
+    })
+}
