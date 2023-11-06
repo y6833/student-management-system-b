@@ -246,7 +246,7 @@
                   v-model="props.row.scores[key]"
                   controls-position="right"
                   :min="0"
-                  :max="120"
+                  :max="props.row.maxScores.find(item => item.name === key).max"
                   @change="
                     ChangeScores(
                       props.row.student.id,
@@ -258,9 +258,12 @@
                 ></el-input-number>
                 <!-- 通过方法获取成绩最大值 -->
               </el-form-item>
+              <div style="margin-left: 40px; font-size: 16px">总分:
+                <span style="padding: 0 60px">{{ props.row.sums }}</span></div>
+
             </div>
             <div>
-              <RadarChart style="width: 100%; height: 100%" />
+              <RadarChart style="width: 100%; height: 100%" :stuScores="props.row"/>
             </div>
           </el-form>
         </template>
@@ -279,14 +282,16 @@
       </el-table-column>
       <el-table-column prop="examDate" label="考试日期" width="200">
       </el-table-column>
+      <el-table-column prop="examName" label="考试名称" width="200">
+      </el-table-column>
       <el-table-column prop="student.grade" label="年级" width="80">
       </el-table-column>
       <el-table-column prop="student.classId" label="班级" width="120">
       </el-table-column>
       <el-table-column
-        prop="sum"
+        :prop="subject != '总分' ? 'sum' : 'sums'"
         sortable
-        :label="subject == 'sum' ? '总分' : subject"
+        :label="subject != '总分' ? subject : '总分'"
         width="160"
       >
       </el-table-column>
@@ -294,14 +299,14 @@
         prop="gradeRanking"
         sortable
         label="年级排名"
-        width="200"
+        width="100"
       >
       </el-table-column>
       <el-table-column
         prop="classRanking"
         sortable
         label="班级排名"
-        width="140"
+        width="100"
       >
       </el-table-column>
       <el-table-column label="操作">
@@ -335,7 +340,7 @@
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
         :current-page="pageNum"
-        :page-sizes="[3, 5, 10, 100]"
+        :page-sizes="[3, 5, 10, 20]"
         :page-size="pageSize"
         layout="total, sizes, prev, pager, next, jumper"
         :total="total"
@@ -440,7 +445,12 @@ import {
   addStudentScore,
   delStudentScore,
 } from "@/api/scores";
-import { getSubjectList } from "@/api/course";
+import {
+  getSubjectList,
+  getSubjectMax,
+  getClassAve,
+  getGradeAve,
+} from "@/api/course";
 import { getMajorList } from "@/api/major";
 import RadarChart from "@/components/fig/RadarChart.vue";
 export default {
@@ -506,7 +516,7 @@ export default {
       majors: [], //专业列表
       examNames: [], //考试列表
       subjects: [], //考试科目
-      subject: "sum", //选中的科目
+      subject: "总分", //选中的科目
       studentList: [],
     };
   },
@@ -533,11 +543,10 @@ export default {
         const res1 = await getStuScorePage(this.studentList);
         if (res1.code == "200") {
           this.tableData = res1.data;
-          console.log(this.tableData);
-          // this.tableData = res1.data.slice(0, this.pageSize);
           this.handlecomparesXyChange();
+          this.getStudentScoresInfo();
         }
-        this.total = res.data.total;
+        this.total = res.data.data.total;
       }
     },
 
@@ -616,14 +625,6 @@ export default {
       });
     },
 
-    //更具考试科目修改sum值
-    subjectChange() {
-      this.tableData.forEach((item) => {
-        const str = JSON.stringify(item.scores);
-        const map = JSON.parse(str);
-        item.sum = map[this.subject];
-      });
-    },
     //根据考试日期筛选
     async chooseExamdataChange() {
       await this.load();
@@ -671,7 +672,7 @@ export default {
       this.comparesDy = 0;
       this.comparesXy = 0;
       this.compares = 0;
-      this.subject = "sum";
+      this.subject = "总分";
       this.chooseExamdata = "";
       this.chooseExamname = "";
       this.handleSearch();
@@ -693,97 +694,76 @@ export default {
       }
     },
 
-    //添加总分
-    getsumscores() {
-      // this.tableData.forEach((item) => {
-      //   const str = JSON.stringify(item.scores);
-      //   const map = JSON.parse(str);
-      //   item.sum = Object.values(map).reduce((a, b) => a + b, 0);
-      // });
+    //更具考试科目修改sum值
+    subjectChange() {
+      this.tableData.forEach((item) => {
+        const str = JSON.stringify(item.scores);
+        const map = JSON.parse(str);
+        item.sum = map[this.subject];
+        item.sums = Object.values(map).reduce((a, b) => a + b, 0);
+      });
     },
     //通过成绩查询
     handlecomparesXyChange() {
-      if (this.comparesIf != "") {
-        switch (this.comparesIf) {
-          case this.compare[0]:
-            // if (this.subject == "") {
-            //   this.getsumscores();
-            //   this.tableData = this.tableData.filter(
-            //     (item) => item.sum >= this.compares
-            //   );
-            // } else {
-            //   this.tableData.forEach((item) => {
-            //     const str = JSON.stringify(item.scores);
-            //     const map = JSON.parse(str);
-            //     item.sum = map[this.subject];
-            //   });
-            this.subjectChange();
-            this.tableData = this.tableData.filter(
-              (item) => item.sum >= this.compares
-            );
-            // }
-            break;
-          case this.compare[1]:
-            // if (this.subject == "") {
-            //   this.getsumscores();
-            //   this.tableData = this.tableData.filter(
-            //     (item) => item.sum == this.compares
-            //   );
-            // } else {
-            //   this.tableData.forEach((item) => {
-            //     const str = JSON.stringify(item.scores);
-            //     const map = JSON.parse(str);
-            //     item.sum = map[this.subject];
-            //   });
-            this.subjectChange();
-            this.tableData = this.tableData.filter(
-              (item) => item.sum == this.compares
-            );
-            // }
-            break;
-          case this.compare[2]:
-            // if (this.subject == "") {
-            //   this.getsumscores();
-            //   this.tableData = this.tableData.filter(
-            //     (item) => item.sum <= this.compares
-            //   );
-            // } else {
-            //   this.tableData.forEach((item) => {
-            //     const str = JSON.stringify(item.scores);
-            //     const map = JSON.parse(str);
-            //     item.sum = map[this.subject];
-            //   });
-            this.subjectChange();
-            this.tableData = this.tableData.filter(
-              (item) => item.sum <= this.compares
-            );
-            // }
-            break;
-          case this.compare[3]:
-            // if (this.subject == "") {
-            //   this.getsumscores();
-            //   this.tableData = this.tableData.filter(
-            //     (item) =>
-            //       item.sum >= this.comparesDy && item.sum <= this.comparesXy
-            //   );
-            // } else {
-            //   this.tableData.forEach((item) => {
-            //     const str = JSON.stringify(item.scores);
-            //     const map = JSON.parse(str);
-            //     item.sum = map[this.subject];
-            //   });
-            this.subjectChange();
-            this.tableData = this.tableData.filter(
-              (item) =>
-                item.sum >= this.comparesDy && item.sum <= this.comparesXy
-            );
-            // }
-            break;
-        }
-      } else {
-        // this.getsumscores();
-        this.subjectChange();
+      this.subjectChange();
+
+      switch (this.comparesIf) {
+        case this.compare[0]:
+          this.tableData = this.tableData.filter(
+            (item) => item.sum >= this.compares
+          );
+
+          break;
+        case this.compare[1]:
+          this.tableData = this.tableData.filter(
+            (item) => item.sum == this.compares
+          );
+          break;
+        case this.compare[2]:
+          this.tableData = this.tableData.filter(
+            (item) => item.sum <= this.compares
+          );
+          break;
+        case this.compare[3]:
+          this.tableData = this.tableData.filter(
+            (item) => item.sum >= this.comparesDy && item.sum <= this.comparesXy
+          );
+          break;
       }
+    },
+
+    // 获取学生成绩信息（要传给雷达图）
+    getStudentScoresInfo() {
+      //获取每个科目的最大值
+      this.tableData.forEach(async (item) => {
+        //获取所有的键
+
+        let keys = Object.keys(item.scores);
+        const date = new Date(item.examDate);
+        const formattedDate = date.toLocaleDateString("zh-CN", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+        });
+        let keysStr = JSON.stringify(keys).replace(/\[|\]/g, "");
+        let params = {
+          examDate: formattedDate,
+          id: item.student.id,
+          objects: keysStr,
+        };
+        const res1 = await getSubjectMax(keys); //获取科目满分
+        const res2 = await getClassAve(params); //获取班级平均分
+        const res3 = await getGradeAve(params); //获取年级平均分
+        if (res1.code == 200) {
+          item.maxScores = res1.data;
+        }
+        if (res2.code == 200) {
+          item.classAve = res2.data;
+        }
+        if(res3.code == 200){
+          item.gradeAve = res3.data
+        }
+      });
     },
     //修改成绩
     async ChangeScores(id, courseName, scores, examDate1) {
@@ -800,7 +780,8 @@ export default {
         examDate: examDate,
       };
       const res = await updataScore(params);
-      if (res.code != 200) {
+      if (res.code == 200) {
+      } else {
         this.$message.error("修改失败");
       }
     },
@@ -815,7 +796,6 @@ export default {
     },
     //添加成绩
     async addStudentScoresubmit() {
-      console.log(this.stuScore.scores[this.subject], this.subject);
       const str = this.subject + ":" + this.stuScore.scores[this.subject];
       const params = {
         studentId: this.stuScore.stuform.id,

@@ -9,28 +9,38 @@
 import * as echarts from "echarts";
 export default {
   name: "RadarChart",
+  props:{
+    stuScores:{}
+  },
   data() {
-    return {};
+    return {
+      classAve:[],
+      gradeAve:[],
+      scores:[],
+    };
   },
   mounted() {
     var chartDom = document.getElementById("main");
     var myChart = echarts.init(chartDom);
     var option;
-
+    this.classAve= Object.values(this.stuScores.classAve);
+    this.gradeAve = Object.values(this.stuScores.gradeAve);
+    this.scores = Object.values(this.stuScores.scores);
     option = {
       legend: {
-        data: ["班级平均分", "个人成绩"],
+        data: ["班级平均分","年级平均分", "个人成绩"],
       },
       radar: {
         // shape: 'circle',
-        indicator: [
-          { name: "语文", max: 100 },
-          { name: "数学", max: 100 },
-          { name: "英语", max: 100 },
-          { name: "Java", max: 100 },
-          { name: "C语言", max: 100 },
-          { name: "Python", max: 100 },
-        ],
+        indicator: this.stuScores.maxScores
+        // [
+        //   { name: "语文", max: 100 },
+        //   { name: "数学", max: 100 },
+        //   { name: "英语", max: 100 },
+        //   { name: "Java", max: 100 },
+        //   { name: "C语言", max: 100 },
+        //   { name: "Python", max: 100 },
+        // ],
       },
       series: [
         {
@@ -38,11 +48,15 @@ export default {
           type: "radar",
           data: [
             {
-              value: [60, 60, 60, 60, 60, 60],
+              value: this.classAve,
               name: "班级平均分",
             },
             {
-              value: [50, 80, 78, 78, 86, 65],
+              value: this.gradeAve,
+              name: "年级平均分",
+            },
+            {
+              value: this.scores,
               name: "个人成绩",
               symbol: "rect",
               symbolSize: 12,
