@@ -53,3 +53,12 @@ export function delStudentScore(params) {
     })
     
 }
+
+
+//获取数据条数
+export function getScoreTotal(){
+    return request({
+        'url': '/admin/score/getScoreTotal',
+        'method': 'GET',
+    })
+}

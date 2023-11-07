@@ -47,6 +47,7 @@
       <el-menu-item-group>
         <template slot="title">教师管理区</template>
         <el-menu-item index="/scores">学生成绩管理</el-menu-item>
+        <el-menu-item index="/scores">考试管理</el-menu-item>
         <el-menu-item index="2-2">各科题型管理</el-menu-item>
         <el-menu-item index="2-3">学生各科题型成绩管理</el-menu-item>
       </el-menu-item-group>

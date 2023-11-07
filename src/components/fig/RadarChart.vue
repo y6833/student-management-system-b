@@ -19,7 +19,7 @@ export default {
       scores:[],
     };
   },
-  mounted() {
+   mounted() {
     var chartDom = document.getElementById("main");
     var myChart = echarts.init(chartDom);
     var option;

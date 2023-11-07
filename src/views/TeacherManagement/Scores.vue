@@ -246,7 +246,9 @@
                   v-model="props.row.scores[key]"
                   controls-position="right"
                   :min="0"
-                  :max="props.row.maxScores.find(item => item.name === key).max"
+                  :max="
+                    props.row.maxScores.find((item) => item.name === key).max
+                  "
                   @change="
                     ChangeScores(
                       props.row.student.id,
@@ -258,13 +260,19 @@
                 ></el-input-number>
                 <!-- 通过方法获取成绩最大值 -->
               </el-form-item>
-              <div style="margin-left: 40px; font-size: 16px">总分:
-                <span style="padding: 0 60px">{{ props.row.sums }}</span></div>
-
+              <div style="margin-left: 40px; font-size: 16px">
+                总分: <span style="padding: 0 60px">{{ props.row.sums }}</span>
+              </div>
             </div>
-            <div>
-              <RadarChart style="width: 100%; height: 100%" :stuScores="props.row"/>
+            <div v-if="props.row.maxScores.length > 2">
+              <RadarChart 
+                style="width: 100%; height: 100%"
+                :stuScores="props.row"
+              />
             </div>
+            <div v-else>
+                <ScoreBarChart style="width: 100%; height: 100%" :stuScores="props.row" />
+              </div>
           </el-form>
         </template>
       </el-table-column>
@@ -444,6 +452,7 @@ import {
   getExamList,
   addStudentScore,
   delStudentScore,
+  getScoreTotal,
 } from "@/api/scores";
 import {
   getSubjectList,
@@ -453,8 +462,9 @@ import {
 } from "@/api/course";
 import { getMajorList } from "@/api/major";
 import RadarChart from "@/components/fig/RadarChart.vue";
+import ScoreBarChart from "@/components/fig/ScoreBarChart.vue";
 export default {
-  components: { RadarChart },
+  components: { RadarChart ,ScoreBarChart },
   name: "Scores",
   data() {
     const searchOptions = [
@@ -486,7 +496,7 @@ export default {
       addStudentScore: false, //新增学生弹框
       updataStudent: false, //修改学生弹窗
       activationIn: false, //激活
-      selectedId: [], //选中的列表id
+      selectedId: [], 
       chooseExamdata: "",
       chooseExamname: "",
       stuform: {
@@ -545,8 +555,12 @@ export default {
           this.tableData = res1.data;
           this.handlecomparesXyChange();
           this.getStudentScoresInfo();
+          this.total = res.data.data.total;
         }
-        this.total = res.data.data.total;
+        const res2 = await getScoreTotal();
+        if (res2.code == 200) {
+          this.total = res2.data;
+        }
       }
     },
 
@@ -589,7 +603,7 @@ export default {
     //导出接口
     exportBtn() {
       // console.log("导出");
-      window.open("http://localhost:9001/sms/admin/student/export");
+      window.open("http://localhost:9001/sms/admin/score/export");
     },
 
     handleSizeChange(pageSize) {
@@ -616,12 +630,15 @@ export default {
     //批量选中
     handleSelectionChange(val) {
       // [{},{}] =>[1,2,3]
-      this.selectedId = val.map((element) => element.id);
+      val.forEach((index,value) => {
+        this.selectedId[value] = index;
+      });
+
     },
     //批量删除
     batchDeletion() {
-      this.selectedId.forEach((id) => {
-        this.delStudent(id);
+      this.selectedId.forEach((item) => {
+        this.delStudentScore(item)
       });
     },
 
@@ -706,27 +723,27 @@ export default {
     //通过成绩查询
     handlecomparesXyChange() {
       this.subjectChange();
-
+      console.log(this.subject);
       switch (this.comparesIf) {
         case this.compare[0]:
           this.tableData = this.tableData.filter(
-            (item) => item.sum >= this.compares
+            (item) => (this.subject == '总分'?item.sums: item.sum) >= this.compares
           );
 
           break;
         case this.compare[1]:
           this.tableData = this.tableData.filter(
-            (item) => item.sum == this.compares
+            (item) => (this.subject == '总分'?item.sums: item.sum)== this.compares
           );
           break;
         case this.compare[2]:
           this.tableData = this.tableData.filter(
-            (item) => item.sum <= this.compares
+            (item) => (this.subject == '总分'?item.sums: item.sum) <= this.compares
           );
           break;
         case this.compare[3]:
           this.tableData = this.tableData.filter(
-            (item) => item.sum >= this.comparesDy && item.sum <= this.comparesXy
+            (item) => (this.subject == '总分'?item.sums: item.sum) >= this.comparesDy && (this.subject == '总分'?item.sums: item.sum) <= this.comparesXy
           );
           break;
       }
@@ -760,8 +777,8 @@ export default {
         if (res2.code == 200) {
           item.classAve = res2.data;
         }
-        if(res3.code == 200){
-          item.gradeAve = res3.data
+        if (res3.code == 200) {
+          item.gradeAve = res3.data;
         }
       });
     },
