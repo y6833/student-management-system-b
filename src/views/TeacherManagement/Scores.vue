@@ -265,14 +265,17 @@
               </div>
             </div>
             <div v-if="props.row.maxScores.length > 2">
-              <RadarChart 
+              <RadarChart
                 style="width: 100%; height: 100%"
                 :stuScores="props.row"
               />
             </div>
             <div v-else>
-                <ScoreBarChart style="width: 100%; height: 100%" :stuScores="props.row" />
-              </div>
+              <ScoreBarChart
+                style="width: 100%; height: 100%"
+                :stuScores="props.row"
+              />
+            </div>
           </el-form>
         </template>
       </el-table-column>
@@ -464,7 +467,7 @@ import { getMajorList } from "@/api/major";
 import RadarChart from "@/components/fig/RadarChart.vue";
 import ScoreBarChart from "@/components/fig/ScoreBarChart.vue";
 export default {
-  components: { RadarChart ,ScoreBarChart },
+  components: { RadarChart, ScoreBarChart },
   name: "Scores",
   data() {
     const searchOptions = [
@@ -496,7 +499,7 @@ export default {
       addStudentScore: false, //新增学生弹框
       updataStudent: false, //修改学生弹窗
       activationIn: false, //激活
-      selectedId: [], 
+      selectedId: [],
       chooseExamdata: "",
       chooseExamname: "",
       stuform: {
@@ -630,15 +633,14 @@ export default {
     //批量选中
     handleSelectionChange(val) {
       // [{},{}] =>[1,2,3]
-      val.forEach((index,value) => {
+      val.forEach((index, value) => {
         this.selectedId[value] = index;
       });
-
     },
     //批量删除
     batchDeletion() {
       this.selectedId.forEach((item) => {
-        this.delStudentScore(item)
+        this.delStudentScore(item);
       });
     },
 
@@ -723,27 +725,32 @@ export default {
     //通过成绩查询
     handlecomparesXyChange() {
       this.subjectChange();
-      console.log(this.subject);
       switch (this.comparesIf) {
         case this.compare[0]:
           this.tableData = this.tableData.filter(
-            (item) => (this.subject == '总分'?item.sums: item.sum) >= this.compares
+            (item) =>
+              (this.subject == "总分" ? item.sums : item.sum) >= this.compares
           );
 
           break;
         case this.compare[1]:
           this.tableData = this.tableData.filter(
-            (item) => (this.subject == '总分'?item.sums: item.sum)== this.compares
+            (item) =>
+              (this.subject == "总分" ? item.sums : item.sum) == this.compares
           );
           break;
         case this.compare[2]:
           this.tableData = this.tableData.filter(
-            (item) => (this.subject == '总分'?item.sums: item.sum) <= this.compares
+            (item) =>
+              (this.subject == "总分" ? item.sums : item.sum) <= this.compares
           );
           break;
         case this.compare[3]:
           this.tableData = this.tableData.filter(
-            (item) => (this.subject == '总分'?item.sums: item.sum) >= this.comparesDy && (this.subject == '总分'?item.sums: item.sum) <= this.comparesXy
+            (item) =>
+              (this.subject == "总分" ? item.sums : item.sum) >=
+                this.comparesDy &&
+              (this.subject == "总分" ? item.sums : item.sum) <= this.comparesXy
           );
           break;
       }

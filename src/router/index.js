@@ -27,6 +27,11 @@ const routes = [
         path: 'scores',
         name: '学生成绩管理',
         component: () => import('../views/TeacherManagement/Scores.vue'),
+      },
+      {
+        path: 'examination',
+        name: '考试信息管理',
+        component: () => import('../views/TeacherManagement/examination.vue'),
       }
       , {
         path: 'person',
