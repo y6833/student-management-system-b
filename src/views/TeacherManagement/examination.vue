@@ -401,6 +401,7 @@ export default {
     },
     //添加考试信息
     async addExaminationsubmit() {
+      this.examinationform.examDate = moment(this.examinationform.examDate).add(1, 'day')
       const data = {
         examination: this.examinationform,
         courses: this.checkedcourses,
@@ -434,6 +435,7 @@ export default {
       });
       const [year, month, day] = this.examinationform.examDate.split("/");
       this.examinationform.examDate = `${year}-${month}-${day}`;
+      this.examinationform.examDate = moment(this.examinationform.examDate).add(1, 'day')
       let examination = this.examinationform;
       const res = await updataExamination(examination);
       if (res.code == 200) {

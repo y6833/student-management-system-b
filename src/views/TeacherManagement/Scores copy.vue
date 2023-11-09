@@ -25,6 +25,44 @@
             <el-radio v-model="searchContent[index]" label="女">女</el-radio>
           </div>
 
+          <div class="block" v-else-if="check === searchs[6]">
+            <el-date-picker
+              v-model="chooseExamdata"
+              type="date"
+              placeholder="请选择考试日期"
+              @change="chooseExamdataChange"
+              value-format="yyyy-MM-dd HH:mm:ss"
+            >
+            </el-date-picker>
+          </div>
+          <div class="block" v-else-if="check === searchs[7]">
+            <el-select
+              v-model="chooseExamname"
+              placeholder="请选择考试名称"
+              @change="chooseExamnameChange"
+            >
+              <el-option
+                v-for="(item, index) in examNames"
+                :key="index"
+                :label="item"
+                :value="item"
+              ></el-option>
+            </el-select>
+          </div>
+          <div class="block" v-else-if="check === searchs[8]">
+            <el-select
+              v-model="subject"
+              placeholder="请选择科目名称"
+              @change="subjectChange"
+            >
+              <el-option
+                v-for="(item, index) in subjects"
+                :key="index"
+                :label="item"
+                :value="item"
+              ></el-option>
+            </el-select>
+          </div>
           <div v-else-if="check === searchs[3]">
             <el-select v-model="searchContent[index]" placeholder="请选择年级">
               <el-option
@@ -49,42 +87,6 @@
             <el-select v-model="searchContent[index]" placeholder="请选择专业">
               <el-option
                 v-for="(item, index) in majors"
-                :key="index"
-                :label="item"
-                :value="item"
-              ></el-option>
-            </el-select>
-          </div>
-          <div class="block" v-else-if="check === searchs[6]">
-            <el-date-picker
-              v-model="searchContent[index]"
-              type="date"
-              placeholder="请选择考试日期"
-              value-format="yyyy-MM-dd HH:mm:ss"
-            >
-            </el-date-picker>
-          </div>
-          <div class="block" v-else-if="check === searchs[7]">
-            <el-select
-              v-model="searchContent[index]"
-              placeholder="请选择考试名称"
-            >
-              <el-option
-                v-for="(item, index) in examNames"
-                :key="index"
-                :label="item"
-                :value="item"
-              ></el-option>
-            </el-select>
-          </div>
-          <div class="block" v-else-if="check === searchs[8]">
-            <el-select
-              v-model="subject"
-              placeholder="请选择科目名称"
-              @change="subjectChange"
-            >
-              <el-option
-                v-for="(item, index) in subjects"
                 :key="index"
                 :label="item"
                 :value="item"
@@ -252,8 +254,7 @@
                       props.row.student.id,
                       key,
                       props.row.scores[key],
-                      props.row.examDate,
-                      props.row.examName
+                      props.row.examDate
                     )
                   "
                 ></el-input-number>
@@ -264,10 +265,16 @@
               </div>
             </div>
             <div v-if="props.row.maxScores.length > 2">
-              <RadarChart class="chart" :stuScores="props.row" />
+              <RadarChart
+                style="width: 100%; height: 100%"
+                :stuScores="props.row"
+              />
             </div>
             <div v-else>
-              <ScoreBarChart class="chart" :stuScores="props.row" />
+              <ScoreBarChart
+                style="width: 100%; height: 100%"
+                :stuScores="props.row"
+              />
             </div>
           </el-form>
         </template>
@@ -493,8 +500,8 @@ export default {
       updataStudent: false, //修改学生弹窗
       activationIn: false, //激活
       selectedId: [],
-      // chooseExamdata: "",
-      // chooseExamname: "",
+      chooseExamdata: "",
+      chooseExamname: "",
       stuform: {
         id: "",
         password: "",
@@ -545,23 +552,18 @@ export default {
       const res = await getStuScoreList(params);
 
       if (res.code == 200) {
-        console.log(res);
-        this.tableData = res.data.studentScoresList;
-        this.handlecomparesXyChange();
-        this.getStudentScoresInfo();
-        this.total = res.data.total;
-        // this.studentList = res.data.data.records;
-        // const res1 = await getStuScorePage(this.studentList);
-        // if (res1.code == "200") {
-        //   this.tableData = res1.data;
-        //   this.handlecomparesXyChange();
-        //   this.getStudentScoresInfo();
-        //   this.total = res.data.data.total;
-        // }
-        // const res2 = await getScoreTotal();
-        // if (res2.code == 200) {
-        //   this.total = res2.data;
-        // }
+        this.studentList = res.data.data.records;
+        const res1 = await getStuScorePage(this.studentList);
+        if (res1.code == "200") {
+          this.tableData = res1.data;
+          this.handlecomparesXyChange();
+          this.getStudentScoresInfo();
+          this.total = res.data.data.total;
+        }
+        const res2 = await getScoreTotal();
+        if (res2.code == 200) {
+          this.total = res2.data;
+        }
       }
     },
 
@@ -643,12 +645,12 @@ export default {
     },
 
     //根据考试日期筛选
-    // async chooseExamdataChange() {
-    //   await this.load();
-    //   this.tableData = this.tableData.filter(
-    //     (item) => item.examDate == this.chooseExamdata
-    //   );
-    // },
+    async chooseExamdataChange() {
+      await this.load();
+      this.tableData = this.tableData.filter(
+        (item) => item.examDate == this.chooseExamdata
+      );
+    },
     //根据考试名称进行筛选
     async chooseExamnameChange() {
       await this.load();
@@ -656,7 +658,6 @@ export default {
         (item) => item.examName == this.chooseExamname
       );
     },
-    //删除
     async delStudentScore(row) {
       const params = {
         studentId: row.student.id,
@@ -691,8 +692,8 @@ export default {
       this.comparesXy = 0;
       this.compares = 0;
       this.subject = "总分";
-      // this.chooseExamdata = "";
-      // this.chooseExamname = "";
+      this.chooseExamdata = "";
+      this.chooseExamname = "";
       this.handleSearch();
     },
     //选择班级
@@ -755,7 +756,7 @@ export default {
       }
     },
 
-    //- 获取学生成绩信息（要传给雷达图）
+    // 获取学生成绩信息（要传给雷达图）
     getStudentScoresInfo() {
       //获取每个科目的最大值
       this.tableData.forEach(async (item) => {
@@ -770,7 +771,6 @@ export default {
         });
         let keysStr = JSON.stringify(keys).replace(/\[|\]/g, "");
         let params = {
-          examName: item.examName,
           examDate: formattedDate,
           id: item.student.id,
           objects: keysStr,
@@ -789,8 +789,8 @@ export default {
         }
       });
     },
-    //-修改成绩
-    async ChangeScores(id, courseName, scores, examDate1,examName) {
+    //修改成绩
+    async ChangeScores(id, courseName, scores, examDate1) {
       const dateObj = new Date(examDate1);
       const examDate = dateObj.toLocaleDateString("zh-CN", {
         year: "numeric",
@@ -802,7 +802,6 @@ export default {
         courseName: courseName,
         scores: scores,
         examDate: examDate,
-        examName: examName
       };
       const res = await updataScore(params);
       if (res.code == 200) {
@@ -836,7 +835,7 @@ export default {
       this.addStudentScore = false;
       this.load();
     },
-    //-搜索
+    //搜索
     handleSearch() {
       this.searchString = "";
       for (let index = 0; index < this.checkedsearchs.length; index++) {
@@ -877,18 +876,18 @@ export default {
                 ? ""
                 : "&major=" + this.searchContent[index];
             break;
-          case this.searchs[6]:
-            this.searchString +=
-              this.searchContent[index] === undefined
-                ? ""
-                : "&examDate=" + this.searchContent[index];
-            break;
-          case this.searchs[7]:
-            this.searchString +=
-              this.searchContent[index] === undefined
-                ? ""
-                : "&examName=" + this.searchContent[index];
-            break;
+          // case this.searchs[6]:
+          //   this.searchString +=
+          //     this.searchContent[index] === undefined
+          //       ? ""
+          //       : "&examDate=" + this.searchContent[index];
+          //   break;
+          // case this.searchs[7]:
+          //   this.searchString +=
+          //     this.searchContent[index] === undefined
+          //       ? ""
+          //       : "&examName=" + this.searchContent[index];
+          //   break;
           // case this.searchs[8]:
           //   this.searchString +=
           //     this.searchContent[index] === undefined
@@ -910,8 +909,4 @@ export default {
 </script>
   
   <style scoped>
-.chart {
-  width: 100%;
-  height: 100%;
-}
 </style>
