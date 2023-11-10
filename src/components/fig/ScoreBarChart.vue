@@ -2,7 +2,7 @@
 <!-- 成绩柱状图 -->
 <template>
     <div>
-      <div id="main" style="width: 500px; height: 400px"></div>
+      <div v-bind:id="scoreId" style="width: 500px; height: 400px"></div>
     </div>
   </template>
 
@@ -18,12 +18,15 @@ export default {
       classAve:[],
       gradeAve:[],
       scores:[],
+      scoreId:""
     };
+  },
+  beforeMount(){
+   this.scoreId = this.stuScores.scoreId
   },
   mounted() {
     var app = {};
-
-    var chartDom = document.getElementById("main");
+    var chartDom = document.getElementById(this.scoreId);
     var myChart = echarts.init(chartDom);
     var option;
     let scoreee = [["product", "班级平均分", "年级平均分","得分"],[],[]];

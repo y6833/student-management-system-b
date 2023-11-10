@@ -380,7 +380,11 @@
         </el-form-item>
 
         <el-form-item label="考试名称">
-          <el-select v-model="stuScore.examName" placeholder="请选择考试名称">
+          <el-select
+            v-model="stuScore.examName"
+            @change="getSubjectListFunc(stuScore.examName)"
+            placeholder="请选择考试名称"
+          >
             <el-option
               v-for="(item, index) in examNames"
               :key="index"
@@ -391,21 +395,16 @@
         </el-form-item>
 
         <el-form-item label="成绩">
-          <!-- 选中科目 -->
-          <el-select v-model="subject" placeholder="请选择科目名称">
-            <el-option
-              v-for="(item, index) in subjects"
-              :key="index"
-              :label="item"
-              :value="item"
-            ></el-option>
-          </el-select>
-          <!-- 输入成绩 -->
-          <el-input-number
-            v-model="stuScore.scores[subject]"
-            controls-position="right"
-            :min="0"
-          ></el-input-number>
+          <div v-for="(item, index) in subjectList" :key="index">
+            <div style="margin-bottom: 20px">
+              <div class="addObjectName">{{ item }}:</div>
+              <el-input-number
+                v-model="stuScore.scores[item]"
+                controls-position="right"
+                :min="0"
+              ></el-input-number>
+            </div>
+          </div>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -455,6 +454,7 @@ import {
   getSubjectMax,
   getClassAve,
   getGradeAve,
+  getSubjectListByExamName,
 } from "@/api/course";
 import { getMajorList } from "@/api/major";
 import RadarChart from "@/components/fig/RadarChart.vue";
@@ -522,6 +522,7 @@ export default {
       majors: [], //专业列表
       examNames: [], //考试列表
       subjects: [], //考试科目
+      subjectList: [], //根据考试获取考试科目
       subject: "总分", //选中的科目
       studentList: [],
     };
@@ -545,23 +546,10 @@ export default {
       const res = await getStuScoreList(params);
 
       if (res.code == 200) {
-        console.log(res);
         this.tableData = res.data.studentScoresList;
         this.handlecomparesXyChange();
         this.getStudentScoresInfo();
         this.total = res.data.total;
-        // this.studentList = res.data.data.records;
-        // const res1 = await getStuScorePage(this.studentList);
-        // if (res1.code == "200") {
-        //   this.tableData = res1.data;
-        //   this.handlecomparesXyChange();
-        //   this.getStudentScoresInfo();
-        //   this.total = res.data.data.total;
-        // }
-        // const res2 = await getScoreTotal();
-        // if (res2.code == 200) {
-        //   this.total = res2.data;
-        // }
       }
     },
 
@@ -677,6 +665,7 @@ export default {
         scores: {},
       };
       this.subject = "";
+      this.subjectList = []
       //调用接口获得年级、班级、专业列表
       this.getsomeList();
       this.addStudentScore = true;
@@ -790,7 +779,7 @@ export default {
       });
     },
     //-修改成绩
-    async ChangeScores(id, courseName, scores, examDate1,examName) {
+    async ChangeScores(id, courseName, scores, examDate1, examName) {
       const dateObj = new Date(examDate1);
       const examDate = dateObj.toLocaleDateString("zh-CN", {
         year: "numeric",
@@ -802,7 +791,7 @@ export default {
         courseName: courseName,
         scores: scores,
         examDate: examDate,
-        examName: examName
+        examName: examName,
       };
       const res = await updataScore(params);
       if (res.code == 200) {
@@ -810,7 +799,7 @@ export default {
         this.$message.error("修改失败");
       }
     },
-    //取消添加成绩
+    //--取消添加成绩
     addStudentScoresubmitoff() {
       this.stuScore = {
         stuform: {},
@@ -819,13 +808,16 @@ export default {
       this.addStudentScore = false;
       this.load();
     },
-    //添加成绩
+    //--添加成绩
     async addStudentScoresubmit() {
-      const str = this.subject + ":" + this.stuScore.scores[this.subject];
+      let scoreList = ""
+      this.subjectList.forEach((item) => {
+        scoreList +=item +":" + this.stuScore.scores[item] +","
+      });
       const params = {
         studentId: this.stuScore.stuform.id,
         examName: this.stuScore.examName,
-        score: str,
+        scoreList: scoreList,
       };
       const res = await addStudentScore(params);
       if (res.code == 200) {
@@ -835,6 +827,18 @@ export default {
       }
       this.addStudentScore = false;
       this.load();
+    },
+    //-通过老师名称获得考试科目
+    async getSubjectListFunc(examName) {
+      console.log(examName);
+      const params = {
+        examName: examName,
+      };
+      const res = await getSubjectListByExamName(params);
+      console.log(res);
+      if (res.code == 200) {
+        this.subjectList = res.data;
+      }
     },
     //-搜索
     handleSearch() {
@@ -913,5 +917,9 @@ export default {
 .chart {
   width: 100%;
   height: 100%;
+}
+.addObjectName {
+  display: inline-block;
+  width: 80px;
 }
 </style>

@@ -37,3 +37,12 @@ export function getGradeAve(params) {
     })
     
 }
+
+//通过考试名称获取考试科目列表
+export function  getSubjectListByExamName(params){
+    return request({
+        'url': '/admin/course/getSubjectListByExamName',
+        'method': 'GET',
+        params
+    })
+}
