@@ -62,3 +62,11 @@ export function getScoreTotal(){
         'method': 'GET',
     })
 }
+
+//导出
+export function exportScore(examName){
+    return request({
+        'url': `/admin/score/export?examName=${examName}`,
+        'method': 'GET',
+    })
+}

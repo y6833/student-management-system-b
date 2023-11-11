@@ -66,7 +66,7 @@
           </div>
           <div class="block" v-else-if="check === searchs[7]">
             <el-select
-              v-model="searchContent[index]"
+              v-model="chooseExamname"
               placeholder="请选择考试名称"
             >
               <el-option
@@ -163,7 +163,7 @@
         </el-popconfirm>
 
         <el-upload
-          action="http://localhost:9001/sms/admin/student/import"
+          action="http://localhost:9001/sms/admin/score/import"
           style="display: inline-block"
           :show-file-list="false"
           accept=".xlsx"
@@ -448,6 +448,7 @@ import {
   addStudentScore,
   delStudentScore,
   getScoreTotal,
+  exportScore
 } from "@/api/scores";
 import {
   getSubjectList,
@@ -494,7 +495,7 @@ export default {
       activationIn: false, //激活
       selectedId: [],
       // chooseExamdata: "",
-      // chooseExamname: "",
+      chooseExamname: "",
       stuform: {
         id: "",
         password: "",
@@ -590,9 +591,26 @@ export default {
     //   console.log("导入");
     // },
     //导出接口
-    exportBtn() {
-      // console.log("导出");
-      window.open("http://localhost:9001/sms/admin/score/export");
+    async exportBtn() {
+      // await this.getSubjectListFunc(this.chooseExamname)
+      // console.log("导出",this.subjectList);
+      // let subs = JSON.stringify(this.subjectList);
+      // console.log(subs.replace(/[[]]/g, ""));
+      // let data = "学号，学生姓名，班级，"
+
+      let examName=this.chooseExamname
+
+      
+      // 科目1,科目2,"班级排名，年级排名，考试日期，考试名称";
+      if(this.chooseExamname == ""){
+        this.$message.error("请选择考试名称");
+      }else{
+        const res = await exportScore(examName);
+        if(res.code == 200){
+          this.$message.success("导出成功");
+        }
+        // window.open(`http://localhost:9001/sms/admin/score/export?examName=${this.chooseExamname}`);
+      }
     },
 
     handleSizeChange(pageSize) {
@@ -681,7 +699,7 @@ export default {
       this.compares = 0;
       this.subject = "总分";
       // this.chooseExamdata = "";
-      // this.chooseExamname = "";
+      this.chooseExamname = "";
       this.handleSearch();
     },
     //选择班级
@@ -830,7 +848,6 @@ export default {
     },
     //-通过老师名称获得考试科目
     async getSubjectListFunc(examName) {
-      console.log(examName);
       const params = {
         examName: examName,
       };
@@ -889,9 +906,9 @@ export default {
             break;
           case this.searchs[7]:
             this.searchString +=
-              this.searchContent[index] === undefined
+              this.chooseExamname === undefined
                 ? ""
-                : "&examName=" + this.searchContent[index];
+                : "&examName=" + this.chooseExamname;
             break;
           // case this.searchs[8]:
           //   this.searchString +=
