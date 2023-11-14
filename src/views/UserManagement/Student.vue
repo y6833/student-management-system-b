@@ -73,6 +73,7 @@
         </div>
 
         <el-button type="primary" style="margin-left: 5px" @click="handleSearch"
+        :disabled="!authority.includes(4)"
           >搜索</el-button
         >
         <el-button type="warning" @click="reset">重置</el-button>
@@ -81,6 +82,7 @@
       <!-- 功能菜单 -->
       <div style="position: absolute; right: 0px; top: 0px">
         <el-button type="primary" @click="addStudentFunc"
+        :disabled="!authority.includes(1)"
           >新增 <i class="el-icon-circle-plus-outline"></i
         ></el-button>
         <el-popconfirm
@@ -92,7 +94,7 @@
           title="确定删除吗？"
           @confirm="batchDeletion"
         >
-          <el-button type="danger" slot="reference"
+          <el-button type="danger" slot="reference" :disabled="!authority.includes(2)"
             >批量删除 <i class="el-icon-remove-outline"></i
           ></el-button>
         </el-popconfirm>
@@ -106,11 +108,13 @@
           :on-error="handleExcelleImportError"
         >
           <el-button type="primary" style="margin-right: 5px"
+          :disabled="!authority.includes(5)"
             >导入 <i class="el-icon-upload"></i
           ></el-button>
         </el-upload>
 
         <el-button type="primary" @click="exportBtn"
+        :disabled="!authority.includes(6)"
           >导出 <i class="el-icon-download"></i
         ></el-button>
       </div>
@@ -158,6 +162,7 @@
             type="primary"
             size="mini"
             @click="updatastudentfunc(scope.row)"
+            :disabled="!authority.includes(3)"
             >编辑</el-button
           >
           <!-- <el-button type="primary" icon="el-icon-edit" @click="updatastudentfunc(scope.row)" circle></el-button> -->
@@ -171,6 +176,7 @@
             @confirm="delStudent(scope.row.id)"
           >
             <el-button type="danger" size="mini" slot="reference"
+            :disabled="!authority.includes(2)"
               >删除</el-button
             >
             <!-- <el-button type="danger" slot="reference" icon="el-icon-delete" circle></el-button> -->
@@ -448,6 +454,7 @@ import { getStudentPage,saveStudent,removeStudent,updatastudent} from "@/api/stu
 import { getUser, updateIsActivate ,addUser,removeUser,updataUser} from "@/api/user";
 import { getClassList, getGradeList, getClassListBygradeId,getMajorByclassId,getGradeByclassId } from "@/api/class";
 import { getMajorList } from "@/api/major";
+import {getUserPermission} from "@/api/userpermission";
 export default {
   name: "Student",
   data() {
@@ -500,6 +507,7 @@ export default {
       grades: [],
       classIds: [],
       majors: [],
+      authority:[]//权限
     };
   },
   created() {
@@ -507,6 +515,8 @@ export default {
     this.load();
     //请求班级、年级、专业等数据
     this.getsomeList();
+    //获取权限
+    this.getauthority();
   },
   methods: {
     // 获取用户数据
@@ -526,6 +536,19 @@ export default {
         this.getactive(item);
         });
       }
+    },
+
+    //获取权限列表
+    async getauthority(){
+     let user = JSON.parse(localStorage.getItem("user"))
+     //获取权限列表
+     const props={
+      roleId:user.roleId
+     }
+     const res = await getUserPermission(props);
+     if(res.code == 200){
+      this.authority = res.data
+     }
     },
     //获取用户的激活状态
     async getactive(item) {

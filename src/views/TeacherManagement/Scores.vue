@@ -138,6 +138,7 @@
         </div>
 
         <el-button type="primary" style="margin-left: 5px" @click="handleSearch"
+        :disabled="!authority.includes(4)"
           >搜索</el-button
         >
         <el-button type="warning" @click="reset">重置</el-button>
@@ -146,6 +147,7 @@
       <!-- 功能菜单 -->
       <div style="position: absolute; right: 0px; top: 0px">
         <el-button type="primary" @click="addStudentScoreFunc"
+        :disabled="!authority.includes(1)"
           >新增 <i class="el-icon-circle-plus-outline"></i
         ></el-button>
         <el-popconfirm
@@ -158,6 +160,7 @@
           @confirm="batchDeletion"
         >
           <el-button type="danger" slot="reference"
+          :disabled="!authority.includes(2)"
             >批量删除 <i class="el-icon-remove-outline"></i
           ></el-button>
         </el-popconfirm>
@@ -171,11 +174,13 @@
           :on-error="handleExcelleImportError"
         >
           <el-button type="primary" style="margin-right: 5px"
+          :disabled="!authority.includes(5)"
             >导入 <i class="el-icon-upload"></i
           ></el-button>
         </el-upload>
 
         <el-button type="primary" @click="exportBtn"
+        :disabled="!authority.includes(6)"
           >导出 <i class="el-icon-download"></i
         ></el-button>
       </div>
@@ -247,6 +252,7 @@
                   :max="
                     props.row.maxScores.find((item) => item.name === key).max
                   "
+                  :disabled="!authority.includes(3)"
                   @change="
                     ChangeScores(
                       props.row.student.id,
@@ -319,6 +325,7 @@
             type="primary"
             size="mini"
             @click="updatastudentfunc(scope.row)"
+            :disabled="!authority.includes(3)"
             >编辑</el-button
           >
           <el-popconfirm
@@ -331,6 +338,7 @@
             @confirm="delStudentScore(scope.row)"
           >
             <el-button type="danger" size="mini" slot="reference"
+            :disabled="!authority.includes(2)"
               >删除</el-button
             >
           </el-popconfirm>
@@ -460,6 +468,8 @@ import {
 import { getMajorList } from "@/api/major";
 import RadarChart from "@/components/fig/RadarChart.vue";
 import ScoreBarChart from "@/components/fig/ScoreBarChart.vue";
+import {getUserPermission} from "@/api/userpermission";
+
 export default {
   components: { RadarChart, ScoreBarChart },
   name: "Scores",
@@ -526,6 +536,7 @@ export default {
       subjectList: [], //根据考试获取考试科目
       subject: "总分", //选中的科目
       studentList: [],
+      authority:[]//权限
     };
   },
   created() {
@@ -533,6 +544,8 @@ export default {
     this.load();
     //请求班级、年级、专业等数据
     this.getsomeList();
+        //获取权限
+        this.getauthority();
   },
   methods: {
     // 获取用户数据
@@ -553,7 +566,18 @@ export default {
         this.total = res.data.total;
       }
     },
-
+    //获取权限列表
+    async getauthority(){
+     let user = JSON.parse(localStorage.getItem("user"))
+     //获取权限列表
+     const props={
+      roleId:user.roleId
+     }
+     const res = await getUserPermission(props);
+     if(res.code == 200){
+      this.authority = res.data
+     }
+    },
     // 获取班级、年级、专业等数据
     async getsomeList() {
       const res1 = await getClassList(); // 获取班级列表

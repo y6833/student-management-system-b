@@ -19,7 +19,7 @@
           :value="item"
         ></el-option>
       </el-select>
-      <el-button type="primary" @click="load">搜索</el-button>
+      <el-button type="primary" @click="load" :disabled="!authority.includes(4)">搜索</el-button>
       <el-button type="warning" @click="reset">重置</el-button>
     </div>
     <div style="margin: 10px 0">
@@ -30,6 +30,7 @@
         style="display: inline-block"
       >
         <el-button type="primary"
+        :disabled="!authority.includes(1)"
           >上传文件<i class="el-icon-top" style="margin-left: 5px;"></i
         ></el-button>
       </el-upload>
@@ -43,6 +44,7 @@
         @confirm="delBatch"
       >
         <el-button type="danger" slot="reference"
+        :disabled="!authority.includes(2)"
           >批量删除<i class="el-icon-remove-outline" style="margin-left: 5px;"></i
         ></el-button>
       </el-popconfirm>
@@ -64,6 +66,7 @@
       <el-table-column label="下载">
         <template slot-scope="scope">
           <el-button type="primary" @click="download(scope.row.url)"
+          :disabled="!authority.includes(6)"
             >下载</el-button
           >
         </template>
@@ -90,6 +93,7 @@
             @confirm="handleDelete(scope.row.id)"
           >
             <el-button type="danger" slot="reference"
+            :disabled="!authority.includes(2)"
               >删除<i class="el-icon-remove-outline"></i
             ></el-button>
           </el-popconfirm>
@@ -144,6 +148,7 @@ import {
   updateFileStatus,
   getFiletypeList,
 } from "@/api/files";
+import {getUserPermission} from "@/api/userpermission";
 export default {
   name: "File",
   data() {
@@ -158,11 +163,14 @@ export default {
       pageNum: 1,
       pageSize: 10,
       total: 0,
+      authority:[]//权限
     };
   },
   created() {
     this.load();
     this.getfiletypelist();
+        //获取权限
+        this.getauthority();
   },
   methods: {
     async load() {
@@ -198,6 +206,18 @@ export default {
         //   this.total = this.tableData.length
         // }
       }
+    },
+        //获取权限列表
+        async getauthority(){
+     let user = JSON.parse(localStorage.getItem("user"))
+     //获取权限列表
+     const props={
+      roleId:user.roleId
+     }
+     const res = await getUserPermission(props);
+     if(res.code == 200){
+      this.authority = res.data
+     }
     },
     async getfiletypelist() {
       const res = await getFiletypeList();

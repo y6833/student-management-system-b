@@ -44,7 +44,11 @@ const routes = [
       }, {
         path:'file',
         name:'文件管理',
-        component:()=>import('../views/Files.vue')
+        component:()=>import('../views/AdminManagement/Files.vue')
+      }, {
+        path:'userPermission',
+        name:'用户权限管理',
+        component:()=>import('../views/AuthorityManagement/UserPermission.vue')
       }
 
     ]

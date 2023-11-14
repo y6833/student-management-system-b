@@ -64,7 +64,11 @@
           ></el-input>
         </div>
 
-        <el-button type="primary" style="margin-left: 5px" @click="handleSearch"
+        <el-button
+          type="primary"
+          style="margin-left: 5px"
+          @click="handleSearch"
+          :disabled="!authority.includes(4)"
           >搜索</el-button
         >
         <el-button type="warning" @click="reset">重置</el-button>
@@ -72,7 +76,10 @@
 
       <!-- 功能菜单 -->
       <div style="position: absolute; right: 0px; top: 0px">
-        <el-button type="primary" @click="addTeacherFunc"
+        <el-button
+          type="primary"
+          @click="addTeacherFunc"
+          :disabled="!authority.includes(1)"
           >新增 <i class="el-icon-circle-plus-outline"></i
         ></el-button>
         <el-popconfirm
@@ -84,7 +91,10 @@
           title="确定删除吗？"
           @confirm="batchDeletion"
         >
-          <el-button type="danger" slot="reference"
+          <el-button
+            type="danger"
+            slot="reference"
+            :disabled="!authority.includes(2)"
             >批量删除 <i class="el-icon-remove-outline"></i
           ></el-button>
         </el-popconfirm>
@@ -97,12 +107,18 @@
           :on-success="handExcelleImportSuccess"
           :on-error="handleExcelleImportError"
         >
-          <el-button type="primary" style="margin-right: 5px"
+          <el-button
+            type="primary"
+            style="margin-right: 5px"
+            :disabled="!authority.includes(5)"
             >导入 <i class="el-icon-upload"></i
           ></el-button>
         </el-upload>
 
-        <el-button type="primary" @click="exportBtn"
+        <el-button
+          type="primary"
+          @click="exportBtn"
+          :disabled="!authority.includes(6)"
           >导出 <i class="el-icon-download"></i
         ></el-button>
       </div>
@@ -128,7 +144,12 @@
           >
             <label for="myCheckbox" style="display: none"></label>
           </el-checkbox>
-          <el-image class="teaAvatar" :src="defaultAvatar" :preview-src-list="[defaultAvatar]" fit="fill"></el-image>
+          <el-image
+            class="teaAvatar"
+            :src="defaultAvatar"
+            :preview-src-list="[defaultAvatar]"
+            fit="fill"
+          ></el-image>
           <div style="padding: 14px; position: relative">
             <p>姓名：{{ item.name }}</p>
             <p>性别：{{ item.gender }}</p>
@@ -136,15 +157,15 @@
             <p>教职工号：{{ item.id }}</p>
             <p>
               激活：
-                <el-switch
-                  v-model="item.activation"
-                  active-color="#13ce66"
-                  inactive-color="#ff4949"
-                  active-value="true"
-                  inactive-value="false"
-                  @change="handleSwitchChange(item)"
-                >
-                </el-switch>
+              <el-switch
+                v-model="item.activation"
+                active-color="#13ce66"
+                inactive-color="#ff4949"
+                active-value="true"
+                inactive-value="false"
+                @change="handleSwitchChange(item)"
+              >
+              </el-switch>
             </p>
             <div class="bottom_clearfix">
               <el-button
@@ -152,6 +173,7 @@
                 icon="el-icon-edit"
                 circle
                 @click="updataTeacherfunc(item)"
+                :disabled="!authority.includes(3)"
               ></el-button>
               <el-popconfirm
                 style="margin: 0 0 0 5px"
@@ -167,6 +189,7 @@
                   slot="reference"
                   icon="el-icon-delete"
                   circle
+                  :disabled="!authority.includes(2)"
                 ></el-button>
               </el-popconfirm>
             </div>
@@ -193,7 +216,10 @@
     <el-dialog title="新增教师" :visible.sync="addTeacher">
       <el-form ref="teaform" :model="teaform" label-width="80px">
         <el-form-item label="教职工号">
-          <el-input v-model="teaform.id" placeholder="请输入教职工号"></el-input>
+          <el-input
+            v-model="teaform.id"
+            placeholder="请输入教职工号"
+          ></el-input>
         </el-form-item>
 
         <el-form-item label="用户密码">
@@ -435,6 +461,7 @@ import {
   getMajorByclassId,
   getGradeByclassId,
 } from "@/api/class";
+import { getUserPermission } from "@/api/userpermission";
 export default {
   name: "Teacher",
   data() {
@@ -450,7 +477,7 @@ export default {
       "地址",
     ];
     return {
-      defaultAvatar:"http://localhost:8080/img/user.f5801f9b.jpg",
+      defaultAvatar: "http://localhost:8080/img/user.f5801f9b.jpg",
       tableData: [],
       total: 0,
       pageNum: 1,
@@ -483,11 +510,12 @@ export default {
         activation: 0,
         roleId: "",
         roleName: 0,
-        avatar: ""
+        avatar: "",
       },
       grades: [],
       classIds: [],
       majors: [],
+      authority: [], //权限
     };
   },
   created() {
@@ -495,6 +523,8 @@ export default {
     this.load();
     //请求班级、年级、专业等数据
     this.getsomeList();
+    //获取权限
+    this.getauthority();
   },
   methods: {
     // 获取用户数据
@@ -513,6 +543,18 @@ export default {
         this.tableData.forEach((item, index) => {
           this.getactive(item);
         });
+      }
+    },
+    //获取权限列表
+    async getauthority() {
+      let user = JSON.parse(localStorage.getItem("user"));
+      //获取权限列表
+      const props = {
+        roleId: user.roleId,
+      };
+      const res = await getUserPermission(props);
+      if (res.code == 200) {
+        this.authority = res.data;
       }
     },
     //获取用户的激活状态
@@ -661,7 +703,7 @@ export default {
       this.userform.password = this.teaform.password;
       this.userform.activation = this.teaform.activation;
       this.userform.roleId = this.teaform.id;
-      this.teaform.birthday = moment(this.teaform.birthday).add(1, 'day')
+      this.teaform.birthday = moment(this.teaform.birthday).add(1, "day");
       this.userform.roleName = 3;
 
       //添加教师
@@ -725,7 +767,7 @@ export default {
       this.userform.password = this.teaform.password;
       this.userform.activation = this.teaform.activation;
       this.userform.roleId = this.teaform.id;
-      this.teaform.birthday = moment(this.teaform.birthday).add(1, 'day')
+      this.teaform.birthday = moment(this.teaform.birthday).add(1, "day");
       this.userform.roleName = 3;
       const res = await updatateacher(this.teaform);
       if (res.code == 200) {

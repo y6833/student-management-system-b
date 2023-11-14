@@ -64,7 +64,7 @@
         <span slot="title">权限管理导航</span></template
       >
       <el-menu-item-group>
-        <el-menu-item index="3-1">用户权限管理</el-menu-item>
+        <el-menu-item index="/userPermission">用户权限管理</el-menu-item>
       </el-menu-item-group>
     </el-submenu>
   </el-menu>
