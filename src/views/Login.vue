@@ -46,7 +46,7 @@ export default {
       rules: {
         username: [
           { required: true, message: "用户名不能为空", trigger: "blur" },
-          { min: 6, max: 16, message: "用户名长度在6-16之间", trigger: "blur" },
+          { min: 1, max: 16, message: "用户名长度在6-16之间", trigger: "blur" },
         ],
         password: [
           { required: true, message: "密码不能为空", trigger: "blur" },

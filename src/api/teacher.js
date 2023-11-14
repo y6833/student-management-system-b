@@ -40,7 +40,7 @@ export function updatateacher(data) {
 //根据id获取教师信息
 export function getTeacherByRoleId(id) {
     return request({
-        'url': `/admin/admin/getTeacherByRoleId/${id}`,
+        'url': `/admin/teacher/getTeacherByRoleId/${id}`,
         'method': 'GET',
     })
 }
