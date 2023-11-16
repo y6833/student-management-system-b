@@ -40,3 +40,38 @@ export function getGradeByclassId(params){
         params
     })
 }
+
+//获得班级page
+export function getclassPage(params){
+    return request({
+        'url': '/admin/classs/getclassPage',
+        'method': 'GET',
+        params
+    })
+}
+
+//添加班级
+export function addClass(data){
+    return request({
+        'url': '/admin/classs/addClass',
+        'method': 'POST',
+        data
+    })
+}
+
+//修改
+export function updataClass(data){
+    return request({
+        'url': '/admin/classs/updataClass',
+        'method': 'POST',
+        data
+    })
+}
+
+//删除
+export function removeclass(id){
+    return request({
+        'url': `/admin/classs/removeclass/${id}`,
+        'method': 'DELETE',
+    })
+}
