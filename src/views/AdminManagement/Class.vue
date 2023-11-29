@@ -206,10 +206,22 @@
         </el-form-item>
 
         <el-form-item label="班主任ID">
-          <el-input
+          <el-select
             v-model="classform.headTeacherId"
-            placeholder="请输入ID"
-          ></el-input>
+            placeholder="请选择班主任"
+            @change="choiceTeacherFunc"
+          >
+            <el-option
+              v-for="(item, index) in teachers"
+              :key="index"
+              :label="item"
+              :value="item"
+              :default-value="classform.headTeacherId"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="教师姓名">
+          <div>{{ teacherName }}</div>
         </el-form-item>
 
         <el-form-item label="年级">
@@ -264,12 +276,23 @@
         </el-form-item>
 
         <el-form-item label="班主任ID">
-          <el-input
+          <el-select
             v-model="classform.headTeacherId"
-            placeholder="请输入ID"
-          ></el-input>
+            placeholder="请选择班主任"
+            @change="choiceTeacherFunc"
+          >
+            <el-option
+              v-for="(item, index) in teachers"
+              :key="index"
+              :label="item"
+              :value="item"
+              :default-value="classform.headTeacherId"
+            ></el-option>
+          </el-select>
         </el-form-item>
-
+        <el-form-item label="教师姓名">
+          <div>{{ teacherName }}</div>
+        </el-form-item>
         <el-form-item label="年级">
           <el-select
             v-model="classform.gradeId"
@@ -320,7 +343,11 @@ import {
   removeclass,
 } from "@/api/class";
 import { getMajorList } from "@/api/major";
-import { getTeacherByRoleId } from "@/api/teacher";
+import {
+  getTeacherByRoleId,
+  getTeacherList,
+  getTeacherNameById,
+} from "@/api/teacher";
 import { getUserPermission } from "@/api/userpermission";
 export default {
   name: "class",
@@ -352,9 +379,11 @@ export default {
         gradeId: "",
         majorId: "",
       },
+      teacherName: "",
       grades: [],
       classIds: [],
       majors: [],
+      teachers: [],
       authority: [], //权限
     };
   },
@@ -397,8 +426,8 @@ export default {
       // 重新渲染页面的逻辑，例如更新表格数据等
       this.renderTable();
     },
-    renderTable(){
-      this.tableData = this.tableData1
+    renderTable() {
+      this.tableData = this.tableData1;
     },
 
     //获取权限列表
@@ -419,6 +448,10 @@ export default {
       const res1 = await getClassList();
       const res2 = await getGradeList();
       const res3 = await getMajorList();
+      const res = await getTeacherList();
+      if (res.code == 200) {
+        this.teachers = res.data;
+      }
       if (res1.code == 200) {
         this.classIds = res1.data;
       }
@@ -483,7 +516,7 @@ export default {
     //选择年级
     async choiceGradeFunc() {
       const params = {
-        gradeId: this.classform.grade,
+        gradeId: this.classform.gradeId,
       };
       const res = await getClassListBygradeId(params);
       if (res.code == 200) {
@@ -491,24 +524,14 @@ export default {
       }
     },
 
-    //选择班级
-    async choiceClassFunc() {
-      //获得专业
-      const params = {
-        classId: this.classform.classId,
-      };
-      const res1 = await getMajorByclassId(params);
-      const res2 = await getGradeByclassId(params);
-      if (res1.code == 200) {
-        this.majors = res1.data;
-      }
-      //获得班级
-      if (res2.code == 200) {
-        this.grades = res2.data;
+    //选中班主任
+    async choiceTeacherFunc() {
+      const res = await getTeacherNameById(this.classform.headTeacherId);
+      if (res.code == 200) {
+        this.teacherName = res.data;
       }
     },
 
-    //选择专业
     addclassFunc() {
       this.classform = {};
       //调用接口获得年级、班级、专业列表
@@ -549,6 +572,7 @@ export default {
     updataclassfunc(row) {
       this.updataclass = true;
       this.classform = row;
+      this.choiceTeacherFunc()
     },
     updataclasssubmitoff() {
       this.classform = {};

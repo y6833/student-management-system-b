@@ -237,6 +237,10 @@
               <el-form-item label="班级排名">
                 <span>{{ props.row.classRanking }}</span>
               </el-form-item>
+              <el-form-item label="评语">
+                <el-input type="textarea" v-model="props.row.proposal" @change="updataProposal(props.row)"></el-input>
+                <!-- <span>{{ props.row.proposal }}</span> -->
+              </el-form-item>
             </div>
             <div style="margin-right: 100px">
               成绩：
@@ -324,10 +328,9 @@
           <el-button
             type="primary"
             size="mini"
-            @click="updatastudentfunc(scope.row)"
+            @click="addProposal(scope.row.proposal)"
             :disabled="!authority.includes(3)"
-            >编辑</el-button
-          >
+            >评语</el-button>
           <el-popconfirm
             style="margin-left: 10px"
             confirm-button-text="确定"
@@ -359,7 +362,6 @@
       >
       </el-pagination>
     </div>
-
     <!-- 新增学生成绩 -->
     <el-dialog title="新增学生" :visible.sync="addStudentScore">
       <el-form ref="stuScore" :model="stuScore" label-width="80px">
@@ -456,6 +458,7 @@ import {
   addStudentScore,
   delStudentScore,
   getScoreTotal,
+  updataProposal,
   exportScore
 } from "@/api/scores";
 import {
@@ -526,6 +529,7 @@ export default {
         examName: "",
         scores: {},
         gradeRanking: 0,
+        proposal:"",
         stuform: {},
       },
       grades: [], //年级列表
@@ -558,7 +562,6 @@ export default {
         searchString: this.searchString,
       };
       const res = await getStuScoreList(params);
-
       if (res.code == 200) {
         this.tableData = res.data.studentScoresList;
         this.handlecomparesXyChange();
@@ -600,6 +603,27 @@ export default {
       }
       if (res5.code == 200) {
         this.subjects = res5.data;
+      }
+    },
+    //添加评语
+    async updataProposal(row){
+      const dateObj = new Date(row.examDate);
+      const examDate = dateObj.toLocaleDateString("zh-CN", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      });
+        const params = {
+        id: row.scoreId,
+        proposal: row.proposal,
+        examDate: examDate,
+        examName: row.examName,
+      };
+      const res = await updataProposal(params);
+      if (res.code == 200) {
+        this.$message.success("评论成功");
+      } else {
+        this.$message.error("评论失败");
       }
     },
     handExcelleImportSuccess() {

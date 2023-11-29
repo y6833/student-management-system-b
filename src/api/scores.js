@@ -70,3 +70,12 @@ export function exportScore(examName){
         'method': 'GET',
     })
 }
+
+//修改评语
+export function updataProposal(params){
+    return request({
+        'url': '/admin/score/updataProposal',
+        'method': 'GET',
+        params
+    })
+}

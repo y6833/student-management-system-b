@@ -44,3 +44,20 @@ export function getTeacherByRoleId(id) {
         'method': 'GET',
     })
 }
+
+//获取所有的教师id
+export function getTeacherList() {
+    return request({
+        'url': '/admin/teacher/getTeacherList',
+        'method': 'GET',
+    })
+    
+}
+
+//通过教师id获取教师姓名
+export function getTeacherNameById(id) {
+    return request({
+        'url': `/admin/teacher/getTeacherNameById/${id}`,
+        'method': 'GET',
+    })
+}
