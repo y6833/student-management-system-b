@@ -605,7 +605,7 @@ export default {
         this.subjects = res5.data;
       }
     },
-    //添加评语
+    //添加评语 
     async updataProposal(row){
       const dateObj = new Date(row.examDate);
       const examDate = dateObj.toLocaleDateString("zh-CN", {
