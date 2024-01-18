@@ -50,6 +50,10 @@ const routes = [
         name:'班级管理',
         component:()=>import('../views/AdminManagement/Class.vue')
       }, {
+        path:'major',
+        name:'专业管理',
+        component:()=>import('../views/AdminManagement/Major.vue')
+      }, {
         path:'userPermission',
         name:'用户权限管理',
         component:()=>import('../views/AuthorityManagement/UserPermission.vue')
