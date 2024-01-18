@@ -54,6 +54,10 @@ const routes = [
         name:'专业管理',
         component:()=>import('../views/AdminManagement/Major.vue')
       }, {
+        path:'courses',
+        name:'课程管理',
+        component:()=>import('../views/AdminManagement/Courses.vue')
+      }, {
         path:'userPermission',
         name:'用户权限管理',
         component:()=>import('../views/AuthorityManagement/UserPermission.vue')

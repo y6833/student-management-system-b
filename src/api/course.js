@@ -46,3 +46,39 @@ export function  getSubjectListByExamName(params){
         params
     })
 }
+
+//获取课程分页
+export function getcoursePage(params) {
+    return request({
+        'url': '/admin/course/page',
+        'method': 'GET',
+        params
+    })
+}
+
+//新增
+export function addcourse(data) {
+    return request({
+        'url': '/admin/course/addcourse',
+        'method': 'POST',
+        data
+    })
+}
+
+//修改课程名称
+export function updatacourse(params){
+    return request({
+        'url': '/admin/course/updatacourse',
+        'method': 'POST',
+        data:params
+    })
+}
+
+//删除课程
+export function deletecourse(id){
+    return request({
+        'url': `/admin/course/deletecourse/${id}`,
+        'method': 'Delete',
+        
+    })
+}

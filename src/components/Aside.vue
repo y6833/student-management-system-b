@@ -53,7 +53,7 @@
       </el-menu-item-group>
       <el-menu-item-group title="管理员管理" v-if="role<3">
         <el-menu-item index="/major">专业管理</el-menu-item>
-        <el-menu-item index="2-5">课程管理</el-menu-item>
+        <el-menu-item index="/courses">课程管理</el-menu-item>
         <el-menu-item index="/class">班级管理</el-menu-item>
         <el-menu-item index="/file">文件管理</el-menu-item>
       </el-menu-item-group>
