@@ -82,3 +82,28 @@ export function deletecourse(id){
         
     })
 }
+
+//获取课程id列表
+export function getCourseIdList(){
+    return request({
+        'url': `/admin/course/getCourseIdList`,
+        'method': 'GET',       
+    })
+}
+
+//通过课程id获取课程名称
+export function getCourseNameById(id){
+    return request({
+        'url': `/admin/course/getCourseNameById/${id}`,
+        'method': 'GET',       
+    })
+}
+
+//通过课程名称获取课程id
+export function getCourseIdByName(name){
+    return request({
+        'url': `/admin/course/getCourseIdByName/${name}`,
+        'method': 'GET',       
+    })
+}
+

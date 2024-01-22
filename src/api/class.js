@@ -8,6 +8,14 @@ export function getClassList() {
     })
 }
 
+// 获取班级列表
+export function getClassIdList() {
+    return request({
+        'url': '/admin/classs/getClassIdList',
+        'method': 'GET',
+    })
+}
+
 //获取年级列表
 export function getGradeList(){
     return request({
@@ -73,5 +81,21 @@ export function removeclass(id){
     return request({
         'url': `/admin/classs/removeclass/${id}`,
         'method': 'DELETE',
+    })
+}
+
+//通过班级id获取班级名称
+export function getClassNameById(id){
+    return request({
+        'url': `/admin/classs/getClassNameById/${id}`,
+        'method': 'GET',
+    })
+}
+
+//通过班级名称获取班级id'
+export function getClassIdbyName(name){
+    return request({
+        'url': `/admin/classs/getClassIdbyName/${name}`,
+        'method': 'GET',
     })
 }

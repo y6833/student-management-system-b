@@ -90,8 +90,14 @@
       </el-table-column>
       <el-table-column prop="fullmarks" label="满分" width="100">
       </el-table-column>
+      <el-table-column prop="type" label="类型" width="160">
+        <template slot-scope="scope">
+          {{ scope.row.type === 1 ? "考试" : "考察"}}
+        </template></el-table-column
+      >
       <el-table-column prop="remark" label="备注" width="160">
       </el-table-column>
+
       <el-table-column label="操作">
         <template slot-scope="scope">
           <el-button
@@ -179,9 +185,13 @@
             placeholder="请输入课程满分"
           ></el-input>
         </el-form-item>
+        <el-form-item label="模式">
+          <el-radio v-model="courseform.type" label="1">考试</el-radio>
+          <el-radio v-model="courseform.type" label="0">考查</el-radio>
+        </el-form-item>
         <el-form-item label="备注">
           <el-input
-          type="textarea"
+            type="textarea"
             v-model="courseform.remark"
             placeholder="请输入课程信息"
           ></el-input>
@@ -234,9 +244,13 @@
             placeholder="请输入课程满分"
           ></el-input>
         </el-form-item>
+        <el-form-item label="模式">
+          <el-radio v-model="courseform.type" label="1">考试</el-radio>
+          <el-radio v-model="courseform.type" label="0">考查</el-radio>
+        </el-form-item>
         <el-form-item label="备注">
           <el-input
-          type="textarea"
+            type="textarea"
             v-model="courseform.remark"
             placeholder="请输入课程信息"
           ></el-input>
@@ -252,7 +266,12 @@
   
   <script>
 import moment from "moment";
-import {getcoursePage ,addcourse,updatacourse,deletecourse} from "@/api/course";
+import {
+  getcoursePage,
+  addcourse,
+  updatacourse,
+  deletecourse,
+} from "@/api/course";
 import {
   getTeacherByRoleId,
   getTeacherList,
@@ -287,13 +306,15 @@ export default {
         teacher: "",
         teacherId: "",
         fullmarks: "",
-        remark:""
+        remark: "",
+        type: -1, // 1表示考试，0表示考察
       },
       authority: [], //权限
       teachers: [],
-      teacherName:""
+      teacherName: "",
     };
   },
+
   created() {
     //请求分页查询数据
     this.load();
@@ -313,16 +334,15 @@ export default {
       };
       const res = await getcoursePage(params);
       if (res.code == 200) {
-        
         this.tableData = res.data.records;
         this.total = res.data.total;
       }
     },
 
-    async getTeacherList(){
+    async getTeacherList() {
       const res = await getTeacherList();
       if (res.code == 200) {
-        this.teachers = res.data; 
+        this.teachers = res.data;
       }
     },
 
@@ -375,7 +395,7 @@ export default {
     },
 
     addcourseFunc() {
-      this.teacherName = ""
+      this.teacherName = "";
       this.courseform = {};
       this.addcourse = true;
     },
@@ -412,7 +432,7 @@ export default {
     updatacoursefunc(row) {
       this.updatacourse = true;
       this.courseform = row;
-      this.choiceTeacherFunc()
+      this.choiceTeacherFunc();
     },
     //选择教师
     async choiceTeacherFunc() {

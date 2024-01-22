@@ -57,6 +57,10 @@ const routes = [
         path:'courses',
         name:'课程管理',
         component:()=>import('../views/AdminManagement/Courses.vue')
+      },{
+        path:'schedules',
+        name:'课表管理',
+        component:()=>import('../views/AdminManagement/Schedules.vue')
       }, {
         path:'userPermission',
         name:'用户权限管理',
