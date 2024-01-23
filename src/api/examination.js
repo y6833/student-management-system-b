@@ -36,3 +36,11 @@ export function removeExamination(id) {
     })
 }
 
+export function getCurrSchedule(params){
+    return request({
+        'url': `/admin/examination/getCurrSchedule`,
+        'method': 'GET',
+        params
+    })
+}
+

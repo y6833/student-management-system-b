@@ -189,44 +189,72 @@
             placeholder="请输入考试名称"
           ></el-input>
         </el-form-item>
-        <el-form-item label="考试科目">
-          <el-checkbox-group v-model="checkedcourses" :min="1">
-            <el-checkbox
-              v-for="course in courses"
-              :label="course"
-              :key="course"
-              >{{ course }}</el-checkbox
+
+        <el-form-item label="考试类型">
+          <el-radio v-model="examType" label="0" @change="setScheduleName"
+            >测试</el-radio
+          >
+          <el-radio v-model="examType" label="1" @change="getScheduleList()"
+            >考试</el-radio
+          >
+        </el-form-item>
+
+        <div v-if="examType == 0">
+          <el-form-item label="考试科目">
+            <el-checkbox-group v-model="checkedcourses" :min="1">
+              <el-checkbox
+                v-for="course in courses"
+                :label="course"
+                :key="course"
+                >{{ course }}</el-checkbox
+              >
+            </el-checkbox-group>
+          </el-form-item>
+
+          <el-form-item label="年级">
+            <el-select
+              v-model="examinationform.examGrade"
+              placeholder="请选择年级"
             >
-          </el-checkbox-group>
-        </el-form-item>
+              <el-option
+                v-for="(item, index) in grades"
+                :key="index"
+                :label="item"
+                :value="item"
+              ></el-option>
+            </el-select>
+          </el-form-item>
 
-        <el-form-item label="年级">
-          <el-select
-            v-model="examinationform.examGrade"
-            placeholder="请选择年级"
-          >
-            <el-option
-              v-for="(item, index) in grades"
-              :key="index"
-              :label="item"
-              :value="item"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-
-        <el-form-item label="专业">
-          <el-select
-            v-model="examinationform.examMajor"
-            placeholder="请选择专业"
-          >
-            <el-option
-              v-for="(item, index) in majors"
-              :key="index"
-              :label="item"
-              :value="item"
-            ></el-option>
-          </el-select>
-        </el-form-item>
+          <el-form-item label="专业">
+            <el-select
+              v-model="examinationform.examMajor"
+              placeholder="请选择专业"
+            >
+              <el-option
+                v-for="(item, index) in majors"
+                :key="index"
+                :label="item"
+                :value="item"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+        </div>
+        <div v-else-if="examType == 1">
+          <el-form-item label="班级课表">
+            <el-select
+              v-model="examinationform.scheduleName"
+              placeholder="请选择课表"
+              @change="choiceSchedule"
+            >
+              <el-option
+                v-for="(item, index) in schedules"
+                :key="index"
+                :label="item"
+                :value="item"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+        </div>
 
         <el-form-item label="考试日期">
           <el-col :span="11">
@@ -333,21 +361,17 @@
 <script>
 import moment from "moment";
 
-import {
-  getClassList,
-  getGradeList,
-  getClassListBygradeId,
-  getMajorByclassId,
-  getGradeByclassId,
-} from "@/api/class";
+import { getGradeList } from "@/api/class";
 import { getSubjectList } from "@/api/course";
 import { getMajorList } from "@/api/major";
+import { getscheduleList } from "@/api/schedule";
 import { getUserPermission } from "@/api/userpermission";
 import {
   getExaminationPage,
   addExamination,
   removeExamination,
   updataExamination,
+  getCurrSchedule,
 } from "@/api/examination";
 export default {
   name: "Student",
@@ -366,12 +390,15 @@ export default {
       searchString: "",
       addExamination: false, //新增考试弹框
       updataExamination: false, //修改学生弹窗
+      examType: -1, //0测试，1考试
+      schedules: [],
       examinationform: {
         id: "", //考试id
         examName: "", //考试名称
         examGrade: "", //考试年级
         examMajor: "", //考试专业
         examDate: "", //考试日期
+        scheduleName: "测试", //课程id
       },
       selectedId: [], //选中的列表id
       grades: [],
@@ -384,8 +411,8 @@ export default {
     this.load();
     //请求班级、年级、专业等数据
     this.getsomeList();
-        //获取权限
-        this.getauthority();
+    //获取权限
+    this.getauthority();
   },
   methods: {
     // 获取用户数据
@@ -413,6 +440,18 @@ export default {
       const res = await getUserPermission(props);
       if (res.code == 200) {
         this.authority = res.data;
+      }
+    },
+    async choiceSchedule() {
+      //通过课表名称获取考试科目，年级，专业
+      const params = {
+        name: this.examinationform.scheduleName,
+      };
+      const res = await getCurrSchedule(params);
+      if (res.code == 200) {
+        this.checkedcourses = res.data.courses;
+        this.examinationform.examGrade = res.data.examGrade;
+        this.examinationform.examMajor = res.data.examMajor;
       }
     },
     // 获取年级、科目、专业等数据
@@ -454,6 +493,9 @@ export default {
         this.$message.error(res.msg);
       }
     },
+    setScheduleName() {
+      this.examinationform.scheduleName = "测试";
+    },
     //打开更改考试信息窗口
     async updataExaminationfunc(row) {
       this.examinationform = row;
@@ -463,6 +505,13 @@ export default {
     updataExaminationsubmitoff() {
       this.examinationform = {};
       this.updataExamination = false;
+    },
+    //获取课表id列表
+    async getScheduleList() {
+      const res = await getscheduleList();
+      if (res.code == 200) {
+        this.schedules = res.data;
+      }
     },
     //更新考试信息
     async updataExaminationsubmit() {
@@ -550,6 +599,8 @@ export default {
     //添加考试信息
     addExaminationFunc() {
       this.checkedcourses = [];
+      this.examType = -1;
+      this.scheduleName = "";
       this.examinationform = {};
       this.addExamination = true;
     },
