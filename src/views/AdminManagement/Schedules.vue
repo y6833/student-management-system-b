@@ -681,7 +681,7 @@ export default {
     //删除课表内容
     async deleteScheduleInFo(data) {
       data.course = this.courseName
-      console.log(data);
+      // console.log(data);
 
       const res = await deleteScheduleInFo(data);
       if (res.code == 200) {
@@ -690,6 +690,7 @@ export default {
         this.$message.error("删除失败");
       }
       this.updatascheduleInFoButton = false;
+      this.getscheduleWorkList(data.id)
     },
     //修改课表内容信息
     async updatascheduleInFosubmit() {
