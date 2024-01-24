@@ -50,16 +50,25 @@
       border
       stripe
       @selection-change="handleSelectionChange"
+      @expand-change="handleExpandChange"
     >
       <el-table-column type="selection" width="55"> </el-table-column>
       <el-table-column type="expand">
         <template slot-scope="scope">
-          <h2
-            style="text-align: center; cursor: pointer"
-            @click="getscheduleWorkList(scope.row.id)"
+          <el-tooltip
+            class="item"
+            effect="dark"
+            content="点击查看课表"
+            placement="top"
           >
-            {{ scope.row.name }}
-          </h2>
+            <h2
+              style="text-align: center; cursor: pointer"
+              @click="getscheduleWorkList(scope.row.id)"
+            >
+              {{ scope.row.name }}
+            </h2>
+          </el-tooltip>
+
           <table class="schedule_table">
             <thead>
               <tr>
@@ -118,6 +127,11 @@
           {{ gradeMenu[scope.row.grade - 1] }}
         </template></el-table-column
       >
+      <el-table-column prop="stage" label="学期" width="140">
+        <template slot-scope="scope">
+          {{ scope.row.stage === 1 ? "上学期" : "下学期" }}
+        </template>
+      </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
           <el-button
@@ -209,6 +223,10 @@
             ></el-option>
           </el-select>
         </el-form-item>
+        <el-form-item label="学期">
+          <el-radio v-model="scheduleform.stage" label="1">上学期</el-radio>
+          <el-radio v-model="scheduleform.stage" label="2">下学期</el-radio>
+        </el-form-item>
       </el-form>
       <div slot="footer" schedule="dialog-footer">
         <el-button @click="addschedulesubmitoff">取 消</el-button>
@@ -259,6 +277,10 @@
               :default-value="scheduleform.index + 1"
             ></el-option>
           </el-select>
+        </el-form-item>
+        <el-form-item label="学期">
+          <el-radio v-model="scheduleform.stage" label="1">上学期</el-radio>
+          <el-radio v-model="scheduleform.stage" label="2">下学期</el-radio>
         </el-form-item>
       </el-form>
       <div slot="footer" schedule="dialog-footer">
@@ -428,7 +450,7 @@ export default {
       updatascheduleInFoButton: false,
       className: "",
       courseName: "", //课程名称
-      oldData:{},
+      oldData: {},
       classList: [],
       subjectList: [],
       weeklyOptions: [
@@ -459,6 +481,7 @@ export default {
         name: "",
         classs: "",
         grade: -1,
+        stage: 1,
       },
       onescheduleform: {
         id: "",
@@ -470,22 +493,22 @@ export default {
       },
       authority: [], //权限
       scheduleList: [
-        {
-          course: "java",
-          week: 2,
-          weekly: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
-          section: 1,
-          classroom: "101",
-          teacher: "里斯",
-        },
-        {
-          course: "python",
-          week: 2,
-          weekly: [15, 16],
-          section: 1,
-          classroom: "102",
-          teacher: "里斯",
-        },
+        // {
+        //   course: "java",
+        //   week: 2,
+        //   weekly: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
+        //   section: 1,
+        //   classroom: "101",
+        //   teacher: "里斯",
+        // },
+        // {
+        //   course: "python",
+        //   week: 2,
+        //   weekly: [15, 16],
+        //   section: 1,
+        //   classroom: "102",
+        //   teacher: "里斯",
+        // },
       ], //课表
     };
   },
@@ -512,7 +535,9 @@ export default {
         this.total = res.data.total;
       }
     },
-
+    handleExpandChange(row, expandedRows) {
+      this.getscheduleWorkList(row.id);
+    },
     //获取权限列表
     async getauthority() {
       let user = JSON.parse(localStorage.getItem("user"));
@@ -644,6 +669,7 @@ export default {
     },
     //获取课表内容
     async getscheduleWorkList(id) {
+      // 在这里编写你的扩展按钮触发的方法逻辑
       const res = await getscheduleWorkList(id);
       if (res.code == 200) {
         this.scheduleList = res.data;
@@ -680,7 +706,7 @@ export default {
     },
     //删除课表内容
     async deleteScheduleInFo(data) {
-      data.course = this.courseName
+      data.course = this.courseName;
       // console.log(data);
 
       const res = await deleteScheduleInFo(data);
@@ -690,7 +716,7 @@ export default {
         this.$message.error("删除失败");
       }
       this.updatascheduleInFoButton = false;
-      this.getscheduleWorkList(data.id)
+      this.getscheduleWorkList(data.id);
     },
     //修改课表内容信息
     async updatascheduleInFosubmit() {
@@ -715,7 +741,7 @@ export default {
       }
 
       this.weeklys = [];
-      this.oldData = {}
+      this.oldData = {};
       this.getscheduleWorkList(this.onescheduleform.id);
     },
 
@@ -784,6 +810,7 @@ export default {
     },
     handleSearch() {
       this.load();
+      this.scheduleList = [];
       this.searchString = "";
     },
   },
