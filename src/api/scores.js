@@ -79,3 +79,23 @@ export function updataProposal(params){
         params
     })
 }
+
+
+//获得考试平均分列表
+export function getAveTableData(params){
+    return request({
+        'url': '/admin/score/getAveTableData',
+        'method': 'GET',
+        params
+    })
+}
+
+
+//获得考试平均分列表
+export function getSubjectListByExamNameAndGradeAndMajor(params){
+    return request({
+        'url': '/admin/score/getSubjectListByExamNameAndGradeAndMajor',
+        'method': 'GET',
+        params
+    })
+}

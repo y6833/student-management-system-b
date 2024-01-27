@@ -107,3 +107,11 @@ export function getCourseIdByName(name){
     })
 }
 
+//获取科目最大值
+
+export function getCourseMax(name){
+    return request({
+        'url': `/admin/course/getCourseMax/${name}`,
+        'method': 'GET',       
+    })
+}

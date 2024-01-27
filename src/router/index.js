@@ -29,6 +29,21 @@ const routes = [
         component: () => import('../views/TeacherManagement/Scores.vue'),
       },
       {
+        path: 'scores_grade',
+        name: '年级成绩看板',
+        component: () => import('../views/TeacherManagement/ScoresGrade.vue'),
+      },
+      {
+        path: 'scores_class',
+        name: '班级成绩看板',
+        component: () => import('../views/TeacherManagement/ScoresClass.vue'),
+      },
+      {
+        path: 'scores_student',
+        name: '学生成绩看板',
+        component: () => import('../views/TeacherManagement/ScoresStudent.vue'),
+      },
+      {
         path: 'examination',
         name: '考试信息管理',
         component: () => import('../views/TeacherManagement/examination.vue'),

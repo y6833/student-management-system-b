@@ -294,7 +294,7 @@
       ></el-table-column>
       <el-table-column prop="student.gender" label="性别" width="60">
       </el-table-column>
-      <el-table-column prop="examDate" label="考试日期" width="200">
+      <el-table-column prop="examDate" label="考试日期" width="140">
       </el-table-column>
       <el-table-column prop="examName" label="考试名称" width="200">
       </el-table-column>
@@ -306,21 +306,21 @@
         :prop="subject != '总分' ? 'sum' : 'sums'"
         sortable
         :label="subject != '总分' ? subject : '总分'"
-        width="160"
+        width="120"
       >
       </el-table-column>
       <el-table-column
         prop="gradeRanking"
         sortable
         label="年级排名"
-        width="100"
+        width="120"
       >
       </el-table-column>
       <el-table-column
         prop="classRanking"
         sortable
         label="班级排名"
-        width="100"
+        width="120"
       >
       </el-table-column>
       <el-table-column label="操作">
@@ -328,9 +328,10 @@
           <el-button
             type="primary"
             size="mini"
-            @click="addProposal(scope.row.proposal)"
+            @click="scoresGrade(scope.row)"
             :disabled="!authority.includes(3)"
-            >评语</el-button>
+            >年级看板</el-button>
+            <router-link :to="{path:'/scores_grade',query:{exam:scope.row.examName,grade:scope.row.student.grade}}">年级看板</router-link>
           <el-popconfirm
             style="margin-left: 10px"
             confirm-button-text="确定"
@@ -495,7 +496,7 @@ export default {
       total: 0,
       pageNum: 1,
       pageSize: 3,
-      checkedsearchs: [], //选择的条件
+      checkedsearchs: ["学号"], //选择的条件
       searchs: searchOptions,
       searchContent: [], //输入的条件
       comparesIf: "", //成绩搜索条件
@@ -660,7 +661,9 @@ export default {
         // window.open(`http://localhost:9001/sms/admin/score/export?examName=${this.chooseExamname}`);
       }
     },
-
+    scoresGrade(row){
+console.log(row);
+    },
     handleSizeChange(pageSize) {
       this.pageSize = pageSize;
       this.load();
@@ -900,7 +903,7 @@ export default {
         examName: examName,
       };
       const res = await getSubjectListByExamName(params);
-      console.log(res);
+
       if (res.code == 200) {
         this.subjectList = res.data;
       }
