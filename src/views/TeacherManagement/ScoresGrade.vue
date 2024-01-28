@@ -106,8 +106,8 @@
         </div>
       </div>
       <!-- 区域一 -->
-      <div class="area1" style=" background-color: #fff">
-        <div class="left" style="width: 70%;">
+      <div class="area1" style="background-color: #fff">
+        <div class="left" style="width: 70%">
           <!-- 考试科目选择区域 -->
           <div class="exam_subjects">
             <!-- 通过考试名称获取考试科目 -->
@@ -125,16 +125,27 @@
             </el-radio-group>
           </div>
           <div class="subject_class_Ranking">
-            <AveLineChart :choiceSubject="choiceSubject"  :AveTableData="AveTableData"/>
+            <AveLineChart
+              v-if="choiceSubject != null"
+              :choiceSubject="choiceSubject"
+              :AveTableData="AveTableData"
+            />
           </div>
-          <div class="grade_score_range"></div>
+          <div class="grade_score_range" >
+            <ScoreRangeChart
+              v-if="choiceSubject != null"
+              :majorValue="majorValue"
+              :choiceSubject="choiceSubject"
+              :AveTableData="AveTableData"
+            />
+          </div>
         </div>
         <div
           class="right"
-          style="max-height: 600px; background-color: #000; width: 30%"
+          style="max-height: 650px; background-color: #000; width: 30%"
         >
           <div class="average_page">
-            <el-table height="600" :data="AveTableData">
+            <el-table height="650" :data="AveTableData">
               <el-table-column
                 prop="grade"
                 label="年级"
@@ -156,7 +167,7 @@
               <el-table-column
                 prop="examName"
                 label="考试名称"
-                width="220"
+                width="210"
                 sortable
               ></el-table-column>
             </el-table>
@@ -177,15 +188,15 @@ import {
   getExamList,
   getAveTableData,
   getSubjectListByExamNameAndGradeAndMajor,
+  getGradeNum,
 } from "@/api/scores";
 import { getMajorList } from "@/api/major";
-
-import RadarChart from "@/components/fig/RadarChart.vue";
+import ScoreRangeChart from "@/components/fig/ScoreRangeChart.vue";
 import AveLineChart from "@/components/fig/AveLineChart.vue";
 import Realtime from "@/components/Realtime.vue";
 
 export default {
-  components: { Realtime, AveLineChart },
+  components: { Realtime, AveLineChart, ScoreRangeChart },
   data() {
     return {
       examValue: "", //考试名称
@@ -209,7 +220,6 @@ export default {
     this.getsomeList();
     this.getURLData();
   },
-
   methods: {
     getURLData() {
       // 获取URL中的查询字符串
@@ -226,9 +236,26 @@ export default {
       // console.log("exam:", exam);
       // console.log("grade:", grade);
     },
+    async getGradeNum() {
+      const params = {
+        examValue: this.examValue,
+        gradeValue: this.gradeValue,
+        majorValue: this.majorValue,
+        choiceSubject: this.choiceSubject,
+      };
+
+      const res = await getGradeNum(params);
+      if (res.code == 200) {
+        this.gradePeople = res.data.gradePeople; //年级人数
+        this.maxScore = res.data.maxScore; //最高分
+        this.minScore = res.data.minScore; //最低分
+        this.aveScore = res.data.aveScore; //平均分
+      }
+    },
     //选择课程
     choiceSubjectFunc() {
       this.getAverageScore();
+      this.getGradeNum();
     },
     async getAverageScore() {
       //将考试，年级，专业（可为空），科目传过去
@@ -242,7 +269,6 @@ export default {
       if (res.code == 200) {
         this.AveTableData = res.data;
         this.propsAveData.AveTableData = this.AveTableData;
-        this.propsAveData.subjectName = this.choiceSubject;
       } else {
         this.$message.error(res.msg);
       }
@@ -271,6 +297,7 @@ export default {
       this.getSubjectList();
       //请求平均分
       this.getAverageScore();
+      this.getGradeNum();
     },
     async getSubjectList() {
       const params = {
@@ -289,6 +316,7 @@ export default {
       this.getSubjectList();
       //请求平均分
       this.getAverageScore();
+      this.getGradeNum();
     },
   },
 };
@@ -298,8 +326,8 @@ export default {
 /* body {
   background-color: #edf0f5;
 } */
-.el-main{
-  background-color: #EDF0F5;
+.el-main {
+  background-color: #edf0f5;
 }
 .selected-style {
   background-color: #409eff;
@@ -364,7 +392,8 @@ export default {
   text-align: center;
 }
 .area1 {
-  height: 600px;
+  height: 650px;
   display: flex;
 }
+
 </style>

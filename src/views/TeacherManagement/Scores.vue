@@ -990,4 +990,7 @@ console.log(row);
   display: inline-block;
   width: 80px;
 }
+.el-main{
+  background-color: #FFFFFF;
+}
 </style>

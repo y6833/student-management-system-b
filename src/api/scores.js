@@ -99,3 +99,29 @@ export function getSubjectListByExamNameAndGradeAndMajor(params){
         params
     })
 }
+//获取考试年级学生数量
+export function getGradeNum(params){
+    return request({
+        'url': '/admin/score/getGradeNum',
+        'method': 'GET',
+        params
+    })
+}
+//获取横坐标
+
+export function getAbscissa(params){
+    return request({
+        'url': '/admin/score/getAbscissa',
+        'method': 'GET',
+        params
+    })
+}
+
+//获取科目分数集合
+export function getScoreListByExamAndGradeAndSubject(params){
+    return request({
+        'url': '/admin/score/getScoreListByExamAndGradeAndSubject',
+        'method': 'GET',
+        params
+    })
+}

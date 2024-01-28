@@ -25,20 +25,24 @@ export default {
       handler(newValue, oldValue) {
         this.showChart();
       },
-      immediate: true,
       deep: true,
     },
-    // AveTableData: {
-    //   handler(newValue, oldValue) {
-    //     this.showChart();
-    //   },
-    //   immediate: true,
-    //   deep: true,
-    // },
+    AveTableData: {
+      handler(newValue, oldValue) {
+        this.showChart();
+      },
+      deep: true,
+    },
+  },
+  mounted() {
+    this.showChart();
   },
 
   methods: {
     showChart() {
+      this.subjectList = [];
+      this.averageClass = [];
+      this.averageGrade = [];
       // 基于准备好的dom，初始化echarts实例
       let chartDom = document.getElementById("main");
       let myChart = echarts.init(chartDom);
@@ -48,7 +52,6 @@ export default {
         this.averageClass.push(element.averageClass);
         this.averageGrade.push(element.averageGrade);
       });
-
       if (this.choiceSubject == "总分") {
         this.maxnum =
           Math.round(
