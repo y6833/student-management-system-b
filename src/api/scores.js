@@ -8,6 +8,14 @@ export function getStuScoreList(params) {
         params
     })
 }
+
+export function getStuScoreGradeRankList(params) {
+    return request({
+        'url': '/admin/score/getStuScoreGradeRankList',
+        'method': 'GET',
+        params
+    })
+}
 // 获取学生成绩信息
 export function getStuScorePage(data) {
     return request({

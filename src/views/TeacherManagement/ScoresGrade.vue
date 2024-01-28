@@ -126,14 +126,12 @@
           </div>
           <div class="subject_class_Ranking">
             <AveLineChart
-              v-if="choiceSubject != null"
               :choiceSubject="choiceSubject"
               :AveTableData="AveTableData"
             />
           </div>
-          <div class="grade_score_range" >
+          <div class="grade_score_range">
             <ScoreRangeChart
-              v-if="choiceSubject != null"
               :majorValue="majorValue"
               :choiceSubject="choiceSubject"
               :AveTableData="AveTableData"
@@ -175,9 +173,135 @@
         </div>
       </div>
       <!-- 区域二 -->
-      <div class="area2"></div>
-      <!-- 区域三 -->
-      <div class="area3"></div>
+      <div
+        class="area2"
+        style="background-color: #fff; width: 100%; position: relative"
+      >
+        <div
+          class="exam_subjects"
+          style="display: flex; margin: 0 auto; width: auto"
+        >
+          <!-- 通过考试名称获取考试科目 -->
+          <span
+            style="
+              font-size: 14px;
+              margin-right: 10px;
+              line-height: 30px;
+              height: 30px;
+            "
+          >
+            科目</span
+          >
+          <el-radio-group
+            v-model="choiceSubject1"
+            size="mini"
+            @change="choiceSubjectFunc1"
+          >
+            <el-radio-button
+              v-for="subject in examSubjects"
+              :key="subject"
+              :label="subject"
+            ></el-radio-button>
+          </el-radio-group>
+        </div>
+        <span
+          class="ranking_range"
+          style="
+            margin-right: 100px;
+            display: flex;
+            position: absolute;
+            right: 0;
+          "
+        >
+          <span
+            style="
+              margin-right: 10px;
+              font-size: 14px;
+              line-height: 30px;
+              height: 30px;
+            "
+            >年级排名范围</span
+          >
+          <div class="rangkingSelect">
+            <el-select
+              v-model="rankingRange"
+              placeholder="年级排名范围"
+              size="mini"
+              @change="choiceRankingRange"
+            >
+              <el-option
+                v-for="item in rankingRangeList"
+                :key="item"
+                :label="item"
+                :value="item"
+              >
+              </el-option>
+            </el-select>
+          </div>
+        </span>
+        <div class="top">
+          <GradeRankSegmentChart :tableData="tableData" />
+        </div>
+        <div class="bottom">
+          <!-- 学生管理 -->
+          <el-table :data="tableData" height="200" border stripe>
+            <el-table-column
+              prop="student.id"
+              label="学号"
+              width="200"
+            ></el-table-column>
+            <el-table-column
+              prop="student.name"
+              label="姓名"
+              width="200"
+            ></el-table-column>
+            <el-table-column prop="student.gender" label="性别" width="100">
+            </el-table-column>
+            <el-table-column prop="examDate" label="考试日期" width="200">
+            </el-table-column>
+            <el-table-column prop="examName" label="考试名称" width="200">
+            </el-table-column>
+            <el-table-column prop="student.grade" label="年级" width="110">
+            </el-table-column>
+            <el-table-column prop="student.classId" label="班级" width="185">
+            </el-table-column>
+            <el-table-column
+            prop="subjectNum"
+            :label="choiceSubject1"
+            width="150"
+            >
+            </el-table-column>
+            <el-table-column
+              prop="gradeRanking"
+              sortable
+              label="年级排名"
+              width="150"
+            >
+            </el-table-column>
+            <el-table-column
+              prop="classRanking"
+              sortable
+              label="班级排名"
+              width="150"
+            >
+            </el-table-column>
+          </el-table>
+
+          <!-- 分页 -->
+          <div style="padding: 10px 0">
+            <el-pagination
+              @size-change="handleSizeChange"
+              @current-change="handleCurrentChange"
+              :current-page="pageNum"
+              :page-sizes="[3, 5, 10, 20]"
+              :page-size="pageSize"
+              layout="total, sizes, prev, pager, next, jumper"
+              :total="total"
+            >
+            </el-pagination>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -189,14 +313,16 @@ import {
   getAveTableData,
   getSubjectListByExamNameAndGradeAndMajor,
   getGradeNum,
+  getStuScoreGradeRankList,
 } from "@/api/scores";
 import { getMajorList } from "@/api/major";
+import GradeRankSegmentChart from "@/components/fig/GradeRankSegmentChart.vue";
 import ScoreRangeChart from "@/components/fig/ScoreRangeChart.vue";
 import AveLineChart from "@/components/fig/AveLineChart.vue";
 import Realtime from "@/components/Realtime.vue";
 
 export default {
-  components: { Realtime, AveLineChart, ScoreRangeChart },
+  components: { Realtime, AveLineChart, ScoreRangeChart ,GradeRankSegmentChart},
   data() {
     return {
       examValue: "", //考试名称
@@ -208,17 +334,27 @@ export default {
       aveScore: 0, //平均分
       tagType: "", //标签类型，用于显示不同的颜色样式，根据分数来判断
       choiceSubject: "总分", //选择的科目，默认为空
+      choiceSubject1: "总分", //选择的科目，默认为空
       AveTableData: [], //各班级科目的平均成绩列表
       propsAveData: {},
       examSubjects: [], //考试科目列表
       examinationList: [],
+      tableData: [],
+      total: 0,
+      pageNum: 1,
+      pageSize: 20,
+      searchString:"",
+      scores: {},
       majors: [],
       gradeList: [],
+      rankingRangeList: ["1-100", "101-200", "201-300", "301-400", "401-500"], //排名范围列表
+      rankingRange: "1-100", //排名范围
     };
   },
   created() {
     this.getsomeList();
     this.getURLData();
+    this.getScorePage();
   },
   methods: {
     getURLData() {
@@ -250,6 +386,51 @@ export default {
         this.maxScore = res.data.maxScore; //最高分
         this.minScore = res.data.minScore; //最低分
         this.aveScore = res.data.aveScore; //平均分
+      }
+    },
+    //区域2选课程
+    choiceSubjectFunc1() {
+      this.subjectChange()
+      this.getScorePage()
+    },
+    //选择排名
+    choiceRankingRange() {
+      this.getScorePage()
+    },
+    subjectChange() {
+      this.tableData.forEach((item) => {
+        const str = JSON.stringify(item.scores);
+        const map = JSON.parse(str);
+        item.subjectNum = map[this.choiceSubject1];
+        // item.subjectNums = Object.values(map).reduce((a, b) => a + b, 0);
+      });
+    },
+    handleCurrentChange(pageNum) {
+      this.pageNum = pageNum;
+      this.getScorePage();
+    },
+    handleSizeChange(pageSize) {
+      this.pageSize = pageSize;
+      this.getScorePage();
+    },
+    //获取考试page
+    async getScorePage() {
+      this.tableData = [];
+      //请求分页查询数据
+      const params = {
+        pageNum: this.pageNum,
+        pageSize: this.pageSize,
+        rankingRange: this.rankingRange,
+        examValue: this.examValue,
+        gradeValue: this.gradeValue,
+        majorValue: this.majorValue,
+        choiceSubject: this.choiceSubject1,
+      };
+      const res = await getStuScoreGradeRankList(params);
+      if (res.code == 200) {
+        this.tableData = res.data.studentScoresList;
+        this.total = res.data.total;
+        this.subjectChange()
       }
     },
     //选择课程
@@ -392,8 +573,25 @@ export default {
   text-align: center;
 }
 .area1 {
+  padding-top: 10px;
+  height: 660px;
+  display: flex;
+  margin-bottom: 20px;
+}
+.area2 {
   height: 650px;
   display: flex;
+  margin-bottom: 20px;
+  background-color: aqua;
+  padding-top: 10px;
 }
-
+.bottom {
+  position: absolute;
+  bottom: 0;
+}
+.top{
+  position: absolute;
+  top: 40px;
+  padding: 10px;
+}
 </style>

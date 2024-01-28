@@ -1,7 +1,7 @@
 <template>
   <div>
-      <h1>这是主页</h1>
-      <LineChart style="width: 100%; height: 100%;"/>
+      <div style="font-size:240px">欢迎使用此系统</div>
+      
   </div>
 </template>
 

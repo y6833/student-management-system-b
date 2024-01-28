@@ -1,7 +1,7 @@
 <!-- 折线图 -->
 <template>
   <div>
-    <div id="main" style="width: 1150px; height: 300px"></div>
+    <div id="AveLineChart" style="width: 1150px; height: 300px"></div>
   </div>
 </template>
 
@@ -44,7 +44,7 @@ export default {
       this.averageClass = [];
       this.averageGrade = [];
       // 基于准备好的dom，初始化echarts实例
-      let chartDom = document.getElementById("main");
+      let chartDom = document.getElementById("AveLineChart");
       let myChart = echarts.init(chartDom);
       let option;
       this.AveTableData.forEach((element) => {

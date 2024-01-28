@@ -65,10 +65,7 @@
             </el-date-picker>
           </div>
           <div class="block" v-else-if="check === searchs[7]">
-            <el-select
-              v-model="chooseExamname"
-              placeholder="请选择考试名称"
-            >
+            <el-select v-model="chooseExamname" placeholder="请选择考试名称">
               <el-option
                 v-for="(item, index) in examNames"
                 :key="index"
@@ -137,8 +134,11 @@
           ></el-input>
         </div>
 
-        <el-button type="primary" style="margin-left: 5px" @click="handleSearch"
-        :disabled="!authority.includes(4)"
+        <el-button
+          type="primary"
+          style="margin-left: 5px"
+          @click="handleSearch"
+          :disabled="!authority.includes(4)"
           >搜索</el-button
         >
         <el-button type="warning" @click="reset">重置</el-button>
@@ -146,8 +146,10 @@
 
       <!-- 功能菜单 -->
       <div style="position: absolute; right: 0px; top: 0px">
-        <el-button type="primary" @click="addStudentScoreFunc"
-        :disabled="!authority.includes(1)"
+        <el-button
+          type="primary"
+          @click="addStudentScoreFunc"
+          :disabled="!authority.includes(1)"
           >新增 <i class="el-icon-circle-plus-outline"></i
         ></el-button>
         <el-popconfirm
@@ -159,8 +161,10 @@
           title="确定删除吗？"
           @confirm="batchDeletion"
         >
-          <el-button type="danger" slot="reference"
-          :disabled="!authority.includes(2)"
+          <el-button
+            type="danger"
+            slot="reference"
+            :disabled="!authority.includes(2)"
             >批量删除 <i class="el-icon-remove-outline"></i
           ></el-button>
         </el-popconfirm>
@@ -173,14 +177,18 @@
           :on-success="handExcelleImportSuccess"
           :on-error="handleExcelleImportError"
         >
-          <el-button type="primary" style="margin-right: 5px"
-          :disabled="!authority.includes(5)"
+          <el-button
+            type="primary"
+            style="margin-right: 5px"
+            :disabled="!authority.includes(5)"
             >导入 <i class="el-icon-upload"></i
           ></el-button>
         </el-upload>
 
-        <el-button type="primary" @click="exportBtn"
-        :disabled="!authority.includes(6)"
+        <el-button
+          type="primary"
+          @click="exportBtn"
+          :disabled="!authority.includes(6)"
           >导出 <i class="el-icon-download"></i
         ></el-button>
       </div>
@@ -238,7 +246,11 @@
                 <span>{{ props.row.classRanking }}</span>
               </el-form-item>
               <el-form-item label="评语">
-                <el-input type="textarea" v-model="props.row.proposal" @change="updataProposal(props.row)"></el-input>
+                <el-input
+                  type="textarea"
+                  v-model="props.row.proposal"
+                  @change="updataProposal(props.row)"
+                ></el-input>
                 <!-- <span>{{ props.row.proposal }}</span> -->
               </el-form-item>
             </div>
@@ -325,13 +337,17 @@
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button
-            type="primary"
-            size="mini"
-            @click="scoresGrade(scope.row)"
-            :disabled="!authority.includes(3)"
-            >年级看板</el-button>
-            <router-link :to="{path:'/scores_grade',query:{exam:scope.row.examName,grade:scope.row.student.grade}}">年级看板</router-link>
+          <router-link
+            class="LookGrade"
+            :to="{
+              path: '/scores_grade',
+              query: {
+                exam: scope.row.examName,
+                grade: scope.row.student.grade,
+              },
+            }"
+            >年级看板</router-link
+          >
           <el-popconfirm
             style="margin-left: 10px"
             confirm-button-text="确定"
@@ -341,8 +357,11 @@
             title="确定删除吗？"
             @confirm="delStudentScore(scope.row)"
           >
-            <el-button type="danger" size="mini" slot="reference"
-            :disabled="!authority.includes(2)"
+            <el-button
+              type="danger"
+              size="mini"
+              slot="reference"
+              :disabled="!authority.includes(2)"
               >删除</el-button
             >
           </el-popconfirm>
@@ -460,7 +479,7 @@ import {
   delStudentScore,
   getScoreTotal,
   updataProposal,
-  exportScore
+  exportScore,
 } from "@/api/scores";
 import {
   getSubjectList,
@@ -472,7 +491,7 @@ import {
 import { getMajorList } from "@/api/major";
 import RadarChart from "@/components/fig/RadarChart.vue";
 import ScoreBarChart from "@/components/fig/ScoreBarChart.vue";
-import {getUserPermission} from "@/api/userpermission";
+import { getUserPermission } from "@/api/userpermission";
 
 export default {
   components: { RadarChart, ScoreBarChart },
@@ -530,7 +549,7 @@ export default {
         examName: "",
         scores: {},
         gradeRanking: 0,
-        proposal:"",
+        proposal: "",
         stuform: {},
       },
       grades: [], //年级列表
@@ -541,7 +560,7 @@ export default {
       subjectList: [], //根据考试获取考试科目
       subject: "总分", //选中的科目
       studentList: [],
-      authority:[]//权限
+      authority: [], //权限
     };
   },
   created() {
@@ -549,8 +568,8 @@ export default {
     this.load();
     //请求班级、年级、专业等数据
     this.getsomeList();
-        //获取权限
-        this.getauthority();
+    //获取权限
+    this.getauthority();
   },
   methods: {
     // 获取用户数据
@@ -571,16 +590,16 @@ export default {
       }
     },
     //获取权限列表
-    async getauthority(){
-     let user = JSON.parse(localStorage.getItem("user"))
-     //获取权限列表
-     const props={
-      roleId:user.roleId
-     }
-     const res = await getUserPermission(props);
-     if(res.code == 200){
-      this.authority = res.data
-     }
+    async getauthority() {
+      let user = JSON.parse(localStorage.getItem("user"));
+      //获取权限列表
+      const props = {
+        roleId: user.roleId,
+      };
+      const res = await getUserPermission(props);
+      if (res.code == 200) {
+        this.authority = res.data;
+      }
     },
     // 获取班级、年级、专业等数据
     async getsomeList() {
@@ -606,15 +625,15 @@ export default {
         this.subjects = res5.data;
       }
     },
-    //添加评语 
-    async updataProposal(row){
+    //添加评语
+    async updataProposal(row) {
       const dateObj = new Date(row.examDate);
       const examDate = dateObj.toLocaleDateString("zh-CN", {
         year: "numeric",
         month: "2-digit",
         day: "2-digit",
       });
-        const params = {
+      const params = {
         id: row.scoreId,
         proposal: row.proposal,
         examDate: examDate,
@@ -647,22 +666,21 @@ export default {
       // console.log(subs.replace(/[[]]/g, ""));
       // let data = "学号，学生姓名，班级，"
 
-      let examName=this.chooseExamname
+      let examName = this.chooseExamname;
 
-      
       // 科目1,科目2,"班级排名，年级排名，考试日期，考试名称";
-      if(this.chooseExamname == ""){
+      if (this.chooseExamname == "") {
         this.$message.error("请选择考试名称");
-      }else{
+      } else {
         const res = await exportScore(examName);
-        if(res.code == 200){
+        if (res.code == 200) {
           this.$message.success("导出成功");
         }
         // window.open(`http://localhost:9001/sms/admin/score/export?examName=${this.chooseExamname}`);
       }
     },
-    scoresGrade(row){
-console.log(row);
+    scoresGrade(row) {
+      console.log(row);
     },
     handleSizeChange(pageSize) {
       this.pageSize = pageSize;
@@ -734,7 +752,7 @@ console.log(row);
         scores: {},
       };
       this.subject = "";
-      this.subjectList = []
+      this.subjectList = [];
       //调用接口获得年级、班级、专业列表
       this.getsomeList();
       this.addStudentScore = true;
@@ -879,9 +897,9 @@ console.log(row);
     },
     //--添加成绩
     async addStudentScoresubmit() {
-      let scoreList = ""
+      let scoreList = "";
       this.subjectList.forEach((item) => {
-        scoreList +=item +":" + this.stuScore.scores[item] +","
+        scoreList += item + ":" + this.stuScore.scores[item] + ",";
       });
       const params = {
         studentId: this.stuScore.stuform.id,
@@ -975,6 +993,8 @@ console.log(row);
           //   break;
         }
       }
+      this.pageNum = 1;
+      this.pageSize= 3;
       this.load();
     },
   },
@@ -990,7 +1010,16 @@ console.log(row);
   display: inline-block;
   width: 80px;
 }
-.el-main{
-  background-color: #FFFFFF;
+.el-main {
+  background-color: #ffffff;
+}
+.LookGrade {
+  color: #fff;
+  background-color: #409eff;
+  border-color: #409eff;
+  padding: 7px 15px;
+  font-size: 12px;
+  border-radius: 3px;
+  text-decoration: none;
 }
 </style>
