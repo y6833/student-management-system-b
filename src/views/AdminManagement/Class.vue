@@ -131,6 +131,11 @@
       ></el-table-column>
       <el-table-column prop="gradeId" label="年级" width="80">
       </el-table-column>
+      <el-table-column prop="level" label="等级" width="80">
+        <template slot-scope="scope">
+        {{ levelList[scope.row.level] }}
+      </template>
+      </el-table-column>
       <el-table-column prop="majorId" label="专业" width="160">
       </el-table-column>
       <el-table-column prop="headTeacherId" label="班主任ID" width="100">
@@ -341,6 +346,7 @@ import {
   addClass,
   updataClass,
   removeclass,
+  getLevelList
 } from "@/api/class";
 import { getMajorList } from "@/api/major";
 import {
@@ -378,8 +384,10 @@ export default {
         headTeacherId: "",
         gradeId: "",
         majorId: "",
+        level:0
       },
       teacherName: "",
+      levelList:[],
       grades: [],
       classIds: [],
       majors: [],
@@ -448,6 +456,7 @@ export default {
       const res1 = await getClassList();
       const res2 = await getGradeList();
       const res3 = await getMajorList();
+      const res4 = await getLevelList()
       const res = await getTeacherList();
       if (res.code == 200) {
         this.teachers = res.data;
@@ -460,6 +469,9 @@ export default {
       }
       if (res3.code == 200) {
         this.majors = res3.data;
+      }
+      if(res4.code == 200){
+        this.levelList = res4.data
       }
     },
     handExcelleImportSuccess() {
@@ -547,7 +559,6 @@ export default {
     },
     async addclasssubmit() {
       this.addclass = false;
-      console.log(this.classform);
       const res = await addClass(this.classform);
       if (res.code == 200) {
         this.$message.success(res.msg);

@@ -62,6 +62,11 @@
         label="专业名称"
         width="220"
       ></el-table-column>
+      <el-table-column
+        prop="academicYear"
+        label="学年"
+        width="220"
+      ></el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
           <el-button
@@ -124,6 +129,14 @@
             placeholder="请输入专业名称"
           ></el-input>
         </el-form-item>
+        <el-form-item label="学年">
+          <el-input-number
+            v-model="majorform.academicYear"
+            :min="1"
+            :max="10"
+            label="请输入学年"
+          ></el-input-number>
+        </el-form-item>
       </el-form>
       <div slot="footer" major="dialog-footer">
         <el-button @click="addmajorsubmitoff">取 消</el-button>
@@ -146,6 +159,14 @@
             v-model="majorform.majorName"
             placeholder="请输入专业名称"
           ></el-input>
+        </el-form-item>
+        <el-form-item label="学年">
+          <el-input-number
+            v-model="majorform.academicYear"
+            :min="1"
+            :max="10"
+            label="请输入学年"
+          ></el-input-number>
         </el-form-item>
       </el-form>
       <div slot="footer" major="dialog-footer">
@@ -175,6 +196,7 @@ export default {
       majorform: {
         majorId: "",
         majorName: "",
+        academicYear: 0,
       },
       authority: [], //权限
     };
@@ -239,7 +261,6 @@ export default {
 
     //批量删除
     batchDeletion() {
-        console.log(this.selectedId);
       this.selectedId.forEach((id) => {
         this.delmajor(id);
       });

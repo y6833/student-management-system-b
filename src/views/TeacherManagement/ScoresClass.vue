@@ -153,6 +153,40 @@
         class="area2"
         style="background-color: #fff; width: 100%; position: relative"
       >
+      <span
+          class="semester"
+          style="
+            margin-left: 50px;
+            display: flex;
+            position: absolute;
+            left: 0;
+          "
+        >
+          <span
+            style="
+              margin-right: 10px;
+              font-size: 14px;
+              line-height: 30px;
+              height: 30px;
+            "
+            >学期</span
+          >
+          <div class="semesterSelect">
+            <el-select
+              v-model="semester"
+              placeholder="学期"
+              size="mini"
+            >
+              <el-option
+                v-for="item in [1,2]"
+                :key="item"
+                :value="item"
+              >
+              {{item == 1 ? '上学期' :'下学期'}}
+              </el-option>
+            </el-select>
+          </div>
+        </span>
         <div
           class="exam_subjects"
           style="display: flex; margin: 0 auto; width: auto"
@@ -216,7 +250,12 @@
           </div>
         </span>
         <div class="top">
-          <GradeRankSegmentChart :tableData="tableData" />
+          <ClassRankSegmentChart
+            :classValue="classValue"
+            :choiceSubject1="choiceSubject1"
+            :rankingRange="rankingRange"
+            :semester="semester"
+          />
         </div>
         <div class="bottom">
           <!-- 学生管理 -->
@@ -289,11 +328,12 @@ import {
   getSubjectListByExamNameAndGradeAndMajor,
   getClassNum,
   getStuScoreClassRankList,
-  getExamClassAve
+  getExamClassAve,
 } from "@/api/scores";
-import {getExamListks} from '@/api/examination';
+import { getExamListks } from "@/api/examination";
 import { getMajorList } from "@/api/major";
-import GradeRankSegmentChart from "@/components/fig/GradeRankSegmentChart.vue";
+
+import ClassRankSegmentChart from "@/components/fig/ClassRankSegmentChart.vue";
 import ScoreClassRangeChart from "@/components/fig/ScoreClassRangeChart.vue";
 import ClassExamAveChart from "@/components/fig/ClassExamAveChart.vue";
 import Realtime from "@/components/Realtime.vue";
@@ -303,10 +343,11 @@ export default {
     Realtime,
     ClassExamAveChart,
     ScoreClassRangeChart,
-    GradeRankSegmentChart,
+    ClassRankSegmentChart,
   },
   data() {
     return {
+      semester: 1, //学期
       examValue: "", //考试名称
       gradeValue: "", //年级
       classValue: "", //班级
@@ -319,7 +360,7 @@ export default {
       choiceSubject: "总分", //选择的科目，默认为空
       choiceSubject1: "总分", //选择的科目，默认为空
       AveTableData: [], //各班级科目的平均成绩列表
-      examClassAve:[],//map<"考试名称"，"平均分">
+      examClassAve: [], //map<"考试名称"，"平均分">
       examSubjects: [], //考试科目列表
       examinationList: [],
       tableData: [],
@@ -372,9 +413,7 @@ export default {
         this.maxScore = res.data.maxScore; //最高分
         this.minScore = res.data.minScore; //最低分
         this.aveScore = res.data.aveScore; //平均分
-
       }
-      
     },
     //区域2选课程
     choiceSubjectFunc1() {
@@ -412,7 +451,7 @@ export default {
         examValue: this.examValue,
         gradeValue: this.gradeValue,
         majorValue: this.majorValue,
-        classValue:this.classValue,
+        classValue: this.classValue,
         choiceSubject: this.choiceSubject1,
       };
       const res = await getStuScoreClassRankList(params);
@@ -426,8 +465,8 @@ export default {
     choiceSubjectFunc() {
       this.getAverageScore();
       this.getClassNum();
-      if(this.classValue!=""){
-        this.getArea1TopData()
+      if (this.classValue != "") {
+        this.getArea1TopData();
       }
     },
     //选择年级获得班级列表
@@ -499,20 +538,20 @@ export default {
         this.choiceSubjectFunc();
       }
     },
-    choiceClassFunc(){
-        this.getArea1TopData()
-        this.choiceExamOrGradeOrMajor()
+    choiceClassFunc() {
+      this.getArea1TopData();
+      this.choiceExamOrGradeOrMajor();
     },
-    async getArea1TopData(){
-        //获取一个map<"考试名称"，"平均分">
-        const params = {
+    async getArea1TopData() {
+      //获取一个map<"考试名称"，"平均分">
+      const params = {
         classValue: this.classValue,
         choiceSubject: this.choiceSubject,
       };
-        const res = await getExamClassAve(params);
-        if(res.code == 200){
-            this.examClassAve=res.data
-        }
+      const res = await getExamClassAve(params);
+      if (res.code == 200) {
+        this.examClassAve = res.data;
+      }
     },
     choiceExamOrGradeOrMajor() {
       this.getSubjectList();

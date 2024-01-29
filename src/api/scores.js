@@ -24,6 +24,16 @@ export function getStuScoreClassRankList(params) {
     })
 }
 
+
+
+export function ClassRankSegment(params) {
+    return request({
+        'url': '/admin/score/ClassRankSegment',
+        'method': 'GET',
+        params
+    })
+}
+
 // 获取学生成绩信息
 export function getStuScorePage(data) {
     return request({

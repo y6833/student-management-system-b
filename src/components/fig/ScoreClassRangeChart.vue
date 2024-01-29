@@ -208,7 +208,6 @@ export default {
       if (res.code == 200) {
         this.scoreRange = res.data;
         this.scoreRange.unshift(0);
-        console.log(this.scoreRange);
         for (let index = 0; index < this.scoreRange.length; index++) {
           this.peopleNum[index] = 0;
         }

@@ -23,6 +23,13 @@ export function getGradeList(){
         'method': 'GET',
     })
 }
+
+export function getLevelList(){
+    return request({
+        'url': '/admin/classs/getLevelList',
+        'method': 'GET',
+    })
+}
 //通过年级id获取班级列表
 export function getClassListBygradeId(params){
     return request({
