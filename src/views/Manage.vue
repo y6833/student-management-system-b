@@ -97,3 +97,8 @@ export default {
   },
 };
 </script>
+<style scoped>
+.el-header{
+  box-shadow: rgba(0, 21, 41, 0.35) 2px 0px 6px;
+}
+</style>

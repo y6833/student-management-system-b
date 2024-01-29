@@ -2,8 +2,8 @@
   <el-menu
     :default-openeds="['1', '3']"
     style="min-height: 100%; overflow-x: hidden"
-    background-color="rgb(48, 65, 86)"
-    text-color="#fff"
+    background="linear-gradient(to right, white, blue)"
+    text-color="#000"
     active-text-color="#ffd04b"
     :collapse-transition="false"
     :collapse="isCollapse"
@@ -16,7 +16,7 @@
         src="@/assets/logo.png"
         style="width: 20px; position: relative; top: 5px"
       />
-      <b style="color: #fff; margin-left: 5px" v-show="logoTextShow"
+      <b style="color: #000; margin-left: 5px" v-show="logoTextShow"
         >视教学习管理系统</b
       >
     </div>
@@ -100,4 +100,7 @@ export default {
 </script>
 
 <style scoped>
+.el-menu{
+ border-right: solid 1px #fff; 
+}
 </style>

@@ -348,6 +348,28 @@
             }"
             >年级看板</router-link
           >
+          <router-link
+            class="LookClass"
+            :to="{
+              path: '/scores_class',
+              query: {
+                exam: scope.row.examName,
+                class: scope.row.student.classs,
+              },
+            }"
+            >班级看板</router-link
+          >
+          <router-link
+            class="LookStudent"
+            :to="{
+              path: '/scores_student',
+              query: {
+                exam: scope.row.examName,
+                student: scope.row.student.id,
+              },
+            }"
+            >学生看板</router-link
+          >
           <el-popconfirm
             style="margin-left: 10px"
             confirm-button-text="确定"
@@ -584,6 +606,7 @@ export default {
       const res = await getStuScoreList(params);
       if (res.code == 200) {
         this.tableData = res.data.studentScoresList;
+        console.log(this.tableData);
         this.handlecomparesXyChange();
         this.getStudentScoresInfo();
         this.total = res.data.total;

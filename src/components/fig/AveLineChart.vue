@@ -115,6 +115,9 @@ export default {
               },
             },
             data: this.averageClass,
+            itemStyle: {
+              color: "#68DEF8", // 修改这里
+            },
           },
           {
             name: "年级平均分",
@@ -126,6 +129,9 @@ export default {
               },
             },
             data: this.averageGrade,
+            itemStyle: {
+              color: "#17ead9", // 修改这里
+            },
           },
         ],
       };

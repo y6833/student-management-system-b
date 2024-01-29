@@ -13,18 +13,10 @@ export default {
   data() {
     return {
       maxnum: 100,
+      interval:1,
       classNum: [], //班级人数
       classProportion: [], //班级占比
-      classList: [
-        "计科2001",
-        "计科2002",
-        "计科2003",
-        "计科2004",
-        "计科2005",
-        "计科2006",
-        "计科2007",
-        "计科2008",
-      ], //班级列表
+      classList: [], //班级列表
     };
   },
   watch: {
@@ -56,6 +48,7 @@ export default {
       this.classList = Array.from(resultMap.keys());
       this.classNum = Array.from(resultMap.values());
       this.maxnum = Math.max(...this.classNum);
+      this.interval = Math.ceil(this.maxnum/10);
       const sum = this.classNum.reduce(
         (accumulator, currentValue) => accumulator + currentValue,
         0
@@ -91,6 +84,7 @@ export default {
             name: "班级人数",
             type: "value",
             max: this.maxnum,
+            interval: this.interval,
           },
           {
             name: "班级占比",
@@ -105,12 +99,18 @@ export default {
             name: "班级人数",
             type: "bar",
             data: this.classNum,
+            itemStyle: {
+              color: "#24b8ff", // 修改这里
+            },
           },
           {
             name: "班级占比",
             type: "line",
             yAxisIndex: 1,
             data: this.classProportion,
+            itemStyle: {
+              color: "#17ead9", // 修改这里
+            },
           },
         ],
       };

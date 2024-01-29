@@ -2,19 +2,8 @@
 <template>
   <div class="bodys">
     <!-- 标题 -->
-    <div
-      id="drag_hzln3vphjq"
-      class="show-comt-box"
-      style="
-        background-color: #24b8ff;
-        height: 80px;
-        color: #fff;
-        text-align: center;
-        font-size: 20px;
-        line-height: 80px;
-      "
-    >
-      <span>年级成绩看板</span>
+    <div id="drag_hzln3vphjq" class="show-comt-box">
+      <span style="font-family:'华文琥珀';font-size: 32px;">年级成绩看板</span>
     </div>
     <div class="ScoreBody">
       <!-- 选择菜单行 -->
@@ -266,9 +255,9 @@
             <el-table-column prop="student.classId" label="班级" width="185">
             </el-table-column>
             <el-table-column
-            prop="subjectNum"
-            :label="choiceSubject1"
-            width="150"
+              prop="subjectNum"
+              :label="choiceSubject1"
+              width="150"
             >
             </el-table-column>
             <el-table-column
@@ -322,7 +311,12 @@ import AveLineChart from "@/components/fig/AveLineChart.vue";
 import Realtime from "@/components/Realtime.vue";
 
 export default {
-  components: { Realtime, AveLineChart, ScoreRangeChart ,GradeRankSegmentChart},
+  components: {
+    Realtime,
+    AveLineChart,
+    ScoreRangeChart,
+    GradeRankSegmentChart,
+  },
   data() {
     return {
       examValue: "", //考试名称
@@ -336,14 +330,13 @@ export default {
       choiceSubject: "总分", //选择的科目，默认为空
       choiceSubject1: "总分", //选择的科目，默认为空
       AveTableData: [], //各班级科目的平均成绩列表
-      propsAveData: {},
       examSubjects: [], //考试科目列表
       examinationList: [],
       tableData: [],
       total: 0,
       pageNum: 1,
       pageSize: 20,
-      searchString:"",
+      searchString: "",
       scores: {},
       majors: [],
       gradeList: [],
@@ -390,12 +383,12 @@ export default {
     },
     //区域2选课程
     choiceSubjectFunc1() {
-      this.subjectChange()
-      this.getScorePage()
+      this.subjectChange();
+      this.getScorePage();
     },
     //选择排名
     choiceRankingRange() {
-      this.getScorePage()
+      this.getScorePage();
     },
     subjectChange() {
       this.tableData.forEach((item) => {
@@ -430,7 +423,7 @@ export default {
       if (res.code == 200) {
         this.tableData = res.data.studentScoresList;
         this.total = res.data.total;
-        this.subjectChange()
+        this.subjectChange();
       }
     },
     //选择课程
@@ -449,7 +442,6 @@ export default {
       const res = await getAveTableData(params);
       if (res.code == 200) {
         this.AveTableData = res.data;
-        this.propsAveData.AveTableData = this.AveTableData;
       } else {
         this.$message.error(res.msg);
       }
@@ -508,7 +500,8 @@ export default {
   background-color: #edf0f5;
 } */
 .el-main {
-  background-color: #edf0f5;
+  /* background-color: #edf0f5; */
+  background: linear-gradient(to bottom, #edf0f5, #24b8ff);
 }
 .selected-style {
   background-color: #409eff;
@@ -516,7 +509,7 @@ export default {
 }
 
 .ScoreBody {
-  background-color: #edf0f5;
+  /* background-color: #edf0f5; */
 }
 .choiceTitle {
   font-family: 微软雅黑;
@@ -543,9 +536,6 @@ export default {
 .realtime {
   position: absolute;
   right: 20px;
-}
-.badys {
-  background-color: #edf0f5;
 }
 .basicInfo {
   height: 40px;
@@ -589,9 +579,17 @@ export default {
   position: absolute;
   bottom: 0;
 }
-.top{
+.top {
   position: absolute;
   top: 40px;
   padding: 10px;
+}
+.show-comt-box {
+  background: linear-gradient(to right, white, #24b8ff);
+  height: 80px;
+  color: #fff;
+  text-align: center;
+  font-size: 20px;
+  line-height: 80px;
 }
 </style>

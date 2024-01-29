@@ -85,7 +85,7 @@ export default {
 <style scoped>
 .header{
   line-height: 60px;
-  display: flex
+  display: flex;
 }
 .breadcrumb{
   display: inline-block;
@@ -99,4 +99,5 @@ export default {
   height: 30px;
   border-radius: 50%;
 }
+
 </style>
