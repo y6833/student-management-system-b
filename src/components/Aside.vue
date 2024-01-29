@@ -4,7 +4,7 @@
     style="min-height: 100%; overflow-x: hidden"
     background="linear-gradient(to right, white, blue)"
     text-color="#000"
-    active-text-color="#ffd04b"
+    active-text-color="#68DEF8"
     :collapse-transition="false"
     :collapse="isCollapse"
     class="el-menu-vertical-demo"

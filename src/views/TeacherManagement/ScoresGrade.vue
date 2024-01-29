@@ -592,4 +592,17 @@ export default {
   font-size: 20px;
   line-height: 80px;
 }
+/* 将滚动轴隐藏 */
+.el-table--scrollable-y .el-table__body-wrapper{
+  overflow: auto;
+}
+.el-table--scrollable-y .el-table__body-wrapper::-webkit-scrollbar {
+  display: none;
+}
+.el-table__body-wrapper{
+  overflow: auto;
+}
+.el-table__body-wrapper::-webkit-scrollbar {
+  display: none;
+}
 </style>

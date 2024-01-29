@@ -16,6 +16,14 @@ export function getStuScoreGradeRankList(params) {
         params
     })
 }
+export function getStuScoreClassRankList(params) {
+    return request({
+        'url': '/admin/score/getStuScoreClassRankList',
+        'method': 'GET',
+        params
+    })
+}
+
 // 获取学生成绩信息
 export function getStuScorePage(data) {
     return request({
@@ -115,6 +123,14 @@ export function getGradeNum(params){
         params
     })
 }
+//获取考试班级学生数量
+export function getClassNum(params){
+    return request({
+        'url': '/admin/score/getClassNum',
+        'method': 'GET',
+        params
+    })
+}
 //获取横坐标
 
 export function getAbscissa(params){
@@ -125,10 +141,37 @@ export function getAbscissa(params){
     })
 }
 
+//班级获取横坐标
+export function getAbscissa1(params){
+    return request({
+        'url': '/admin/score/getAbscissa1',
+        'method': 'GET',
+        params
+    })
+}
 //获取科目分数集合
 export function getScoreListByExamAndGradeAndSubject(params){
     return request({
         'url': '/admin/score/getScoreListByExamAndGradeAndSubject',
+        'method': 'GET',
+        params
+    })
+}
+
+//获取科目分数集合
+export function getScoreListByExamAndClassAndSubject(params){
+    return request({
+        'url': '/admin/score/getScoreListByExamAndClassAndSubject',
+        'method': 'GET',
+        params
+    })
+}
+
+//获得科目考试所有考试的平均分
+
+export function getExamClassAve(params){
+    return request({
+        'url': '/admin/score/getExamClassAve',
         'method': 'GET',
         params
     })

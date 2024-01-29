@@ -40,6 +40,7 @@ export default {
       let chartDom = document.getElementById("GradeRankSegmentChart");
       let myChart = echarts.init(chartDom);
       let option;
+      console.log(this.tableData);
       // 使用reduce方法将对象集合转换为Map对象，并计算id字段出现的次数
       const resultMap = this.tableData.reduce((acc, cur) => {
         acc.set(cur.student.classId, (acc.get(cur.student.classId) || 0) + 1);

@@ -98,6 +98,7 @@
                       <p>课程节次：第{{ item.section }}节</p>
                       <p>教室：{{ item.classroom }}</p>
                       <p>教师：{{ item.teacher }}</p>
+                      <p>考试类型：{{item.type == 1 ? "考试" : "考察"}}</p>
                     </div>
                   </div>
                   <div class="add_sch">
@@ -536,6 +537,7 @@ export default {
       }
     },
     handleExpandChange(row, expandedRows) {
+      this.scheduleList=[]
       this.getscheduleWorkList(row.id);
     },
     //获取权限列表

@@ -44,3 +44,10 @@ export function getCurrSchedule(params){
     })
 }
 
+//获取课表考试的考试列表
+export function getExamListks(){
+    return request({
+        'url': `/admin/examination/getExamListks`,
+        'method': 'GET',
+    })
+}

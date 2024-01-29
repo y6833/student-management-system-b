@@ -53,16 +53,16 @@ export default {
     this.showChart();
   },
   methods: {
-    showChart() {
+    async showChart() {
       // 基于准备好的dom，初始化echarts实例
       if (this.AveTableData.length > 0) {
         let chartDom = document.getElementById("ScoreRangeChart");
         let myChart = echarts.init(chartDom);
         let option;
         //获得横坐标
-        this.getAbscissa();
+        await this.getAbscissa();
         //通过考试名称年级科目获取该科目在这堂考试的分数集合
-        this.getScoreListByExamAndGradeAndSubject();
+        await this.getScoreListByExamAndGradeAndSubject();
         this.interval = this.scoreRange[2] - this.scoreRange[1];
         for (let index = 0; index < this.scoreList.length; index++) {
           const element = this.scoreList[index];

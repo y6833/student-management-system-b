@@ -348,13 +348,14 @@
             }"
             >年级看板</router-link
           >
-          <router-link
+          <router-link v-if="scope.row.type == 1"
             class="LookClass"
             :to="{
               path: '/scores_class',
               query: {
                 exam: scope.row.examName,
-                class: scope.row.student.classs,
+                grade: scope.row.student.grade,
+                className: scope.row.student.classId,
               },
             }"
             >班级看板</router-link
@@ -365,7 +366,7 @@
               path: '/scores_student',
               query: {
                 exam: scope.row.examName,
-                student: scope.row.student.id,
+                studentId: scope.row.student.id,
               },
             }"
             >学生看板</router-link
@@ -1044,5 +1045,28 @@ export default {
   font-size: 12px;
   border-radius: 3px;
   text-decoration: none;
+  margin-right: 10px;
+}
+.LookClass {
+  color: #fff;
+  background-color: #409eff;
+  border-color: #409eff;
+  padding: 7px 15px;
+  font-size: 12px;
+  border-radius: 3px;
+  text-decoration: none;
+  margin-right: 10px;
+}
+.LookStudent {
+  color: #fff;
+  background-color: #409eff;
+  border-color: #409eff;
+  padding: 7px 15px;
+  font-size: 12px;
+  border-radius: 3px;
+  text-decoration: none;
+}
+.el-main {
+  background-color: #fff;
 }
 </style>
