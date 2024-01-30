@@ -113,7 +113,13 @@
           >
             <label for="myCheckbox" style="display: none"></label>
           </el-checkbox>
-          <img src="../../image/user.jpg" class="teaAvatar" />
+          <el-image
+            class="teaAvatar"
+            :src="item.avatar || defaultAvatar"
+            :preview-src-list="[item.avatar || defaultAvatar]"
+            fit="fill"
+          ></el-image>
+          <!-- <img :src="item.avatar || defaultAvatar" class="teaAvatar" /> -->
           <div style="padding: 14px; position: relative">
             <p>姓名：{{ item.name }}</p>
             <p>性别：{{ item.gender }}</p>
@@ -381,6 +387,7 @@ export default {
       "地址",
     ];
     return {
+      defaultAvatar: "http://localhost:8080/img/user.f5801f9b.jpg",
       tableData: [],
       total: 0,
       pageNum: 1,

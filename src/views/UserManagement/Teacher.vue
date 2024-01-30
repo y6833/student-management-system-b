@@ -146,8 +146,8 @@
           </el-checkbox>
           <el-image
             class="teaAvatar"
-            :src="defaultAvatar"
-            :preview-src-list="[defaultAvatar]"
+            :src="item.avatar || defaultAvatar"
+            :preview-src-list="[item.avatar || defaultAvatar]"
             fit="fill"
           ></el-image>
           <div style="padding: 14px; position: relative">
@@ -155,6 +155,7 @@
             <p>性别：{{ item.gender }}</p>
             <p>年龄：{{ age(item.birthday) }}</p>
             <p>教职工号：{{ item.id }}</p>
+            {{item.avatar}}
             <p>
               激活：
               <el-switch

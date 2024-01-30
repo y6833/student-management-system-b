@@ -24,6 +24,7 @@
           v-model="user.password"
           class="login-input"
           prefix-icon="el-icon-lock"
+          @keyup.enter.native="login"
         ></el-input>
       </el-form-item>
       <el-button @click="login" type="primary" class="login-button"

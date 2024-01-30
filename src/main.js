@@ -7,9 +7,10 @@ import './assets/gloable.css';
 import request from "./utils/request";
 import store from "./store";
 
+import VueCarousel from 'vue-carousel'
 
 Vue.config.productionTip = false
-
+Vue.use(VueCarousel)
 Vue.use(ElementUI);
 
 Vue.prototype.request = request

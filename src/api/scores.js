@@ -89,6 +89,14 @@ export function getScoreTotal(){
     })
 }
 
+
+export function getExamcompareChart(params){
+    return request({
+        'url': '/admin/score/getExamcompareChart',
+        'method': 'GET',
+        params
+    })
+}
 //导出
 export function exportScore(examName){
     return request({
@@ -182,6 +190,15 @@ export function getScoreListByExamAndClassAndSubject(params){
 export function getExamClassAve(params){
     return request({
         'url': '/admin/score/getExamClassAve',
+        'method': 'GET',
+        params
+    })
+}
+
+
+export function getSubRank(params){
+    return request({
+        'url': '/admin/score/getSubRank',
         'method': 'GET',
         params
     })

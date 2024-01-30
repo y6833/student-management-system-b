@@ -51,7 +51,7 @@
     </div>
 
     <el-table
-      v-if="imageIf == false"
+      v-if="imageIf == false && videoIf == false"
       :data="tableData"
       border
       stripe
@@ -121,6 +121,31 @@
             <label for="myCheckbox" style="display: none"></label>
           </el-checkbox>
           <img :src="item.url" class="teaAvatar" />
+
+        </el-card>
+      </el-col>
+    </el-row>
+    <!-- 视频展示 -->
+    <el-row v-if="videoIf">
+      <el-col
+        :span="4"
+        v-for="(item, index) in tableData"
+        :key="index"
+        :offset="index % 5 == 0 ? 0 : 1"
+        style="position: relative;"
+      >
+        <el-card :body-style="{ padding: '0px' }" shadow="hover">
+          <el-checkbox
+            id="myCheckbox"
+            v-model="multipleSelection"
+            :label="item.id"
+            multiple
+            style="position: absolute; top: -3px"
+          >
+            <label for="myCheckbox" style="display: none"></label>
+          </el-checkbox>
+          <video :src="item.url" class="teaAvatar" />
+
         </el-card>
       </el-col>
     </el-row>
@@ -155,9 +180,11 @@ export default {
     return {
       tableData: [],
       imageIf: false,
+      videoIf:false,
       fileType: "",
       fileTypeList: [],
       imagefile: ["jpeg", "png", "gif", "bmp", "jpg"],
+      videofile:["mp4","mp3","wav"],
       name: "",
       multipleSelection: [],
       pageNum: 1,
@@ -189,6 +216,11 @@ export default {
           this.imageIf = true;
         }else{
           this.imageIf = false;
+        }
+        if (this.videofile.includes(this.fileType)) {
+          this.videoIf = true;
+        }else{
+          this.videoIf = false;
         }
 
         // if (this.fileType == "") {
@@ -262,6 +294,7 @@ export default {
       this.name = "";
       this.fileType = "";
       this.imageIf = false;
+      this.videoIf = false;
       this.getfiletypelist();
       this.load();
     },
