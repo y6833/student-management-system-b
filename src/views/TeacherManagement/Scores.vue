@@ -245,6 +245,12 @@
               <el-form-item label="班级排名">
                 <span>{{ props.row.classRanking }}</span>
               </el-form-item>
+              <el-form-item label="考试教室">
+                <el-input
+                  v-model="props.row.examRoom"
+                  @change="updataExamRoom(props.row)"
+                ></el-input>
+              </el-form-item>
               <el-form-item label="评语">
                 <el-input
                   type="textarea"
@@ -297,12 +303,12 @@
       <el-table-column
         prop="student.id"
         label="学号"
-        width="140"
+        width="100"
       ></el-table-column>
       <el-table-column
         prop="student.name"
         label="姓名"
-        width="100"
+        width="80"
       ></el-table-column>
       <el-table-column prop="student.gender" label="性别" width="60">
       </el-table-column>
@@ -318,7 +324,7 @@
         :prop="subject != '总分' ? 'sum' : 'sums'"
         sortable
         :label="subject != '总分' ? subject : '总分'"
-        width="120"
+        width="60"
       >
       </el-table-column>
       <el-table-column
@@ -335,9 +341,16 @@
         width="120"
       >
       </el-table-column>
+      <el-table-column prop="active" label="是否考试" width="100">
+        <template slot-scope="scope">
+          <span v-if="scope.row.active == 1">是</span>
+          <span v-else>否</span>
+        </template>
+      </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
           <router-link
+          v-if="scope.row.active == 1"
             class="LookGrade"
             :to="{
               path: '/scores_grade',
@@ -348,7 +361,8 @@
             }"
             >年级看板</router-link
           >
-          <router-link v-if="scope.row.type == 1"
+          <router-link
+            v-if="scope.row.type == 1 && scope.row.active == 1"
             class="LookClass"
             :to="{
               path: '/scores_class',
@@ -362,6 +376,7 @@
           >
           <router-link
             class="LookStudent"
+            v-if="scope.row.active == 1"
             :to="{
               path: '/scores_student',
               query: {
@@ -501,6 +516,7 @@ import {
   addStudentScore,
   delStudentScore,
   getScoreTotal,
+  updataExamRoom,
   updataProposal,
   exportScore,
 } from "@/api/scores";
@@ -647,6 +663,28 @@ export default {
       }
       if (res5.code == 200) {
         this.subjects = res5.data;
+      }
+    },
+
+    //添加考试教室
+    async updataExamRoom(row) {
+      const dateObj = new Date(row.examDate);
+      const examDate = dateObj.toLocaleDateString("zh-CN", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      });
+      const params = {
+        id: row.scoreId,
+        examRoom: row.examRoom,
+        examDate: examDate,
+        examName: row.examName,
+      };
+      const res = await updataExamRoom(params);
+      if (res.code == 200) {
+        this.$message.success("考试教室设置成功");
+      } else {
+        this.$message.error("考试教室设置失败");
       }
     },
     //添加评语
@@ -1018,7 +1056,7 @@ export default {
         }
       }
       this.pageNum = 1;
-      this.pageSize= 3;
+      this.pageSize = 3;
       this.load();
     },
   },

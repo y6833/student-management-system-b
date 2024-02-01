@@ -53,6 +53,7 @@
           <div class="choiceTitle">班级</div>
           <div class="choiceContent">
             <el-select
+              disabled
               v-model="classValue"
               placeholder="请选择班级(必选)"
               size="mini"
@@ -153,14 +154,9 @@
         class="area2"
         style="background-color: #fff; width: 100%; position: relative"
       >
-      <span
+        <span
           class="semester"
-          style="
-            margin-left: 50px;
-            display: flex;
-            position: absolute;
-            left: 0;
-          "
+          style="margin-left: 50px; display: flex; position: absolute; left: 0"
         >
           <span
             style="
@@ -172,17 +168,9 @@
             >学期</span
           >
           <div class="semesterSelect">
-            <el-select
-              v-model="semester"
-              placeholder="学期"
-              size="mini"
-            >
-              <el-option
-                v-for="item in [1,2]"
-                :key="item"
-                :value="item"
-              >
-              {{item == 1 ? '上学期' :'下学期'}}
+            <el-select v-model="semester" placeholder="学期" size="mini">
+              <el-option v-for="item in [1, 2]" :key="item" :value="item">
+                {{ item == 1 ? "上学期" : "下学期" }}
               </el-option>
             </el-select>
           </div>

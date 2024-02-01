@@ -114,6 +114,14 @@ export function updataProposal(params){
     })
 }
 
+export function updataExamRoom(params){
+    return request({
+        'url': '/admin/score/updataExamRoom',
+        'method': 'GET',
+        params
+    })
+}
+
 
 //获得考试平均分列表
 export function getAveTableData(params){
