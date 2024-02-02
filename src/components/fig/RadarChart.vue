@@ -54,10 +54,32 @@ export default {
             {
               value: this.classAve,
               name: "班级平均分",
+              symbol: "rect",
+              symbolSize: 12,
+              lineStyle: {
+                type: "dashed",
+              },
+              label: {
+                show: true,
+                formatter: function (params) {
+                  return params.value;
+                },
+              },
             },
             {
               value: this.gradeAve,
               name: "年级平均分",
+              symbol: "rect",
+              symbolSize: 12,
+              lineStyle: {
+                type: "dashed",
+              },
+              label: {
+                show: true,
+                formatter: function (params) {
+                  return params.value;
+                },
+              },
             },
             {
               value: this.scores,
