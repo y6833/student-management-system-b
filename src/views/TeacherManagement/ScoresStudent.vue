@@ -243,7 +243,7 @@ export default {
   margin: 0 5px;
 }
 .choiceContent {
-  width: 150px;
+  min-width: 150px;
   line-height: 27px;
   font-family: "楷体";
   font-size: 24px;

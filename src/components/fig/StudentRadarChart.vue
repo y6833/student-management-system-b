@@ -50,11 +50,13 @@ export default {
             name: "",
             max: 0,
           };
-          this.studentScoreList.push(element.subject);
-          this.ScoreAveList.push(element.average);
-          courseMax.name = element.course;
-          courseMax.max = element.max;
-          this.courseMAxList.push(courseMax);
+          if (element.course != "总分") {
+            this.studentScoreList.push(element.subject);
+            this.ScoreAveList.push(element.average);
+            courseMax.name = element.course;
+            courseMax.max = element.max;
+            this.courseMAxList.push(courseMax);
+          }
         });
 
         option = {
