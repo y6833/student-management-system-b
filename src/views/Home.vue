@@ -49,7 +49,7 @@ export default {
         res.data.records.forEach(element => {
           this.videos.push(element.url);
         });
-        console.log(this.videos);
+        // console.log(this.videos);
       }
     },
     nextSlide() {

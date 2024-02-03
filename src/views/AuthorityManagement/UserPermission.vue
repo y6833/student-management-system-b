@@ -200,7 +200,7 @@ export default {
     },
 
      async updataPermission(userId, permission, isPermission) {
-      console.log(userId, permission, isPermission);
+      // console.log(userId, permission, isPermission);
       const props = {
         userId: userId,
         permissionId:permission

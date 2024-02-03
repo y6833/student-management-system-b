@@ -696,7 +696,7 @@ export default {
         classroom: this.onescheduleform.classroom,
         course: this.onescheduleform.course,
       };
-      console.log(data);
+      // console.log(data);
       const res = await saveschedule(data);
       if (res.code == 200) {
         this.$message.success("添加成功");

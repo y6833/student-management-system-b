@@ -383,7 +383,7 @@ export default {
     //批量选中
     handleSelectionChange(val) {
       // [{},{}] =>[1,2,3]
-      console.log(val);
+      // console.log(val);
       this.selectedId = val.map((element) => element.courseId);
     },
 

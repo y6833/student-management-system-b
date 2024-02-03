@@ -59,7 +59,7 @@ export default {
       let chartDom = document.getElementById("ClassRankSegmentChart");
       let myChart = echarts.init(chartDom);
       let option;
-      console.log(this.classValue,this.rankingRange,this.choiceSubject1,this.semester);
+      // console.log(this.classValue,this.rankingRange,this.choiceSubject1,this.semester);
       //班级，科目，范围
       await this.ClassRankSegment();
 
@@ -134,7 +134,7 @@ export default {
       };
       const res = await ClassRankSegment(params);
       if(res.code == 200) {
-        console.log(res.data);
+        // console.log(res.data);
         this.examList = res.data.examList
         this.classNum = res.data.classNum
         this.classProportion = res.data.classProportion

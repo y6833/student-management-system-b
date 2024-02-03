@@ -623,7 +623,7 @@ export default {
       const res = await getStuScoreList(params);
       if (res.code == 200) {
         this.tableData = res.data.studentScoresList;
-        console.log(this.tableData);
+        // console.log(this.tableData);
         this.handlecomparesXyChange();
         this.getStudentScoresInfo();
         this.total = res.data.total;
@@ -742,7 +742,7 @@ export default {
       }
     },
     scoresGrade(row) {
-      console.log(row);
+      // console.log(row);
     },
     handleSizeChange(pageSize) {
       this.pageSize = pageSize;

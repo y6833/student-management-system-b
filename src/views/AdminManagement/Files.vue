@@ -308,7 +308,7 @@ export default {
       this.load();
     },
     handleFileUploadSuccess(res) {
-      console.log(res);
+      // console.log(res);
       this.load();
     },
     download(url) {

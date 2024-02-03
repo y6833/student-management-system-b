@@ -70,7 +70,7 @@ export default {
             const res = await loginInfo(this.user)
             if (res.code == 200) {
               localStorage.setItem("user", JSON.stringify(res.data)); //将用户信息存入浏览器
-              console.log(res);
+              // console.log(res);
                 this.$router.push("/home");
                 this.$message.success("登录成功");
               } else {
