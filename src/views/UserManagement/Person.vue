@@ -190,7 +190,6 @@ export default {
 
       if (res.code == 200) {
         const res1 = await updataUser(this.userform);
-        console.log(res1);
         if (res1.code == 200) {
           this.$message.success("修改成功");
         } else {

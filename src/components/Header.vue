@@ -61,7 +61,7 @@ export default {
     // }
 
     currentPathName(newVal, oldVal) {
-      console.log(newVal);
+      // console.log(newVal);
     },
   },
   computed: {
