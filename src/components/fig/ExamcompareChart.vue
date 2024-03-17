@@ -47,14 +47,16 @@ export default {
         });
       });
 
-      this.tableData.forEach((element) => {
+      for (let index = 0; index < this.tableData.length; index++) {
+        const element = this.tableData[index];
         element.subRankDTO.forEach((subRank) => {
           //添加科目的值
           if (subRank.course != "总分") {
-            myMap.get(subRank.course).push(subRank.subject);
+            // myMap.get(subRank.course).push(subRank.subject);
+            myMap.get(subRank.course)[index] = subRank.subject;
           }
         });
-      });
+      }
 
       //循环map
       myMap.forEach((value, key) => {
