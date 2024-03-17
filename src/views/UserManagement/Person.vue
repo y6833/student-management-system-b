@@ -121,7 +121,7 @@ export default {
 
   data() {
     return {
-      defaultAvatar: "http://localhost:8080/img/user.f5801f9b.jpg",
+      defaultAvatar: "http://localhost:9001/sms/file/9df4588dcb844f63b657dd6b95f9379a.jpg",
       personform: {
         id: "",
         name: "",

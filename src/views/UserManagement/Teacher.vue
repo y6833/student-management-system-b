@@ -155,7 +155,6 @@
             <p>性别：{{ item.gender }}</p>
             <p>年龄：{{ age(item.birthday) }}</p>
             <p>教职工号：{{ item.id }}</p>
-            {{item.avatar}}
             <p>
               激活：
               <el-switch
@@ -478,7 +477,8 @@ export default {
       "地址",
     ];
     return {
-      defaultAvatar: "http://localhost:8080/img/user.f5801f9b.jpg",
+      defaultAvatar:
+        "http://localhost:9001/sms/file/9df4588dcb844f63b657dd6b95f9379a.jpg",
       tableData: [],
       total: 0,
       pageNum: 1,
@@ -546,6 +546,8 @@ export default {
         });
       }
     },
+
+
     //获取权限列表
     async getauthority() {
       let user = JSON.parse(localStorage.getItem("user"));
@@ -567,6 +569,7 @@ export default {
       const res = await getUser(params);
       if (res.code == 200) {
         item.activation = res.data.activation == 1 ? "true" : "false";
+        item.avatar = res.data.avatar;
         //头像
       }
     },
@@ -857,6 +860,7 @@ export default {
   padding: 10px;
 }
 .teaAvatar {
-  width: 100%;
+  width: 280px;
+  height: 240px;
 }
 </style>
