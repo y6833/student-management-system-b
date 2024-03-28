@@ -56,10 +56,10 @@
         <el-menu-item index="/schedules">课表管理</el-menu-item>
         <el-menu-item index="/courses">课程管理</el-menu-item>
         <el-menu-item index="/class">班级管理</el-menu-item>
-        <el-menu-item index="/file">文件管理</el-menu-item>
+        <el-menu-item index="/file" v-if="role < 2">文件管理</el-menu-item>
       </el-menu-item-group>
     </el-submenu>
-    <el-submenu index="3" v-if="role < 3">
+    <el-submenu index="3" v-if="role < 2">
       <template slot="title"
         ><i class="el-icon-setting"></i>
         <span slot="title">权限管理导航</span></template
