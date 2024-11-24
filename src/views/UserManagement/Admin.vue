@@ -1,8 +1,11 @@
 <template>
-  <div>
-    <!-- 搜索 start-->
-    <div style="margin-bottom: 5px">
-      <el-checkbox-group
+  <div class="page-container">
+    <div class="search-container">
+      <div class="search-form">
+        <!-- 搜索条件选择 -->
+        <div class="search-conditions">
+          <!-- 原有的el-checkbox-group -->
+          <el-checkbox-group
         v-model="checkedsearchs"
         @change="handlecheckedsearchsChange"
         :max="3"
@@ -14,11 +17,12 @@
           :key="search"
         ></el-checkbox>
       </el-checkbox-group>
-    </div>
+        </div>
 
-    <div style="margin: 10px 0; position: relative">
-      <div style="display: flex">
-        <div
+        <!-- 搜索表单 -->
+        <div class="search-inputs">
+          <!-- 原有的搜索输入框 -->
+          <div
           v-for="(check, index) in checkedsearchs"
           :key="index"
           style="margin-right: 5px"
@@ -43,18 +47,30 @@
             suffix-icon="el-icon-search"
           ></el-input>
         </div>
+        </div>
 
-        <el-button type="primary" style="margin-left: 5px" @click="handleSearch"
-        :disabled="!authority.includes(4)"
+        <!-- 搜索按钮组 -->
+        <div class="search-buttons">
+          <!-- 原有的搜索和重置按钮 -->
+          <el-button
+          type="primary"
+          style="margin-left: 5px"
+          @click="handleSearch"
+          :disabled="!authority.includes(4)"
           >搜索</el-button
         >
         <el-button type="warning" @click="reset">重置</el-button>
+      
+        </div>
       </div>
 
-      <!-- 功能菜单 -->
-      <div style="position: absolute; right: 0px; top: 0px">
-        <el-button type="primary" @click="addAdminFunc"
-        :disabled="!authority.includes(1)"
+      <!-- 功能按钮组 -->
+      <div class="function-buttons">
+        <!-- 原有的新增、删除、导入、导出按钮 -->
+        <el-button
+          type="primary"
+          @click="addAdminFunc"
+          :disabled="!authority.includes(1)"
           >新增 <i class="el-icon-circle-plus-outline"></i
         ></el-button>
         <el-popconfirm
@@ -66,8 +82,10 @@
           title="确定删除吗？"
           @confirm="batchDeletion"
         >
-          <el-button type="danger" slot="reference"
-          :disabled="!authority.includes(2)"
+          <el-button
+            type="danger"
+            slot="reference"
+            :disabled="!authority.includes(2)"
             >批量删除 <i class="el-icon-remove-outline"></i
           ></el-button>
         </el-popconfirm>
@@ -80,23 +98,27 @@
           :on-success="handExcelleImportSuccess"
           :on-error="handleExcelleImportError"
         >
-          <el-button type="primary" style="margin-right: 5px"
-          :disabled="!authority.includes(5)"
+          <el-button
+            type="primary"
+            style="margin-right: 5px"
+            :disabled="!authority.includes(5)"
             >导入 <i class="el-icon-upload"></i
           ></el-button>
         </el-upload>
 
-        <el-button type="primary" @click="exportBtn"
-        :disabled="!authority.includes(6)"
+        <el-button
+          type="primary"
+          @click="exportBtn"
+          :disabled="!authority.includes(6)"
           >导出 <i class="el-icon-download"></i
         ></el-button>
       </div>
     </div>
-    <!-- 搜索end -->
 
-    <!-- 管理员管理 -->
-
-    <el-row>
+    <!-- 表格内容 -->
+    <div class="content-container">
+      <!-- 原有的el-table等内容 -->
+      <el-row>
       <el-col
         :span="4"
         v-for="(item, index) in tableData"
@@ -167,8 +189,7 @@
         </el-card>
       </el-col>
     </el-row>
-
-    <div style="padding: 10px 0">
+      <div style="padding: 10px 0">
       <el-pagination
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
@@ -180,8 +201,10 @@
       >
       </el-pagination>
     </div>
+    </div>
 
-    <!-- 新增表单 -->
+    <!-- 对话框保持不变 -->
+         <!-- 新增表单 -->
 
     <el-dialog title="新增管理员" :visible.sync="addAdmin">
       <el-form ref="adminform" :model="adminform" label-width="80px">
@@ -355,8 +378,7 @@
     </el-dialog>
   </div>
 </template>
-    
-  <script>
+<script>
 import moment from "moment";
 import { getAdminPage, saveAdmin, removeAdmin, updataAdmin } from "@/api/admin";
 import {
@@ -373,7 +395,7 @@ import {
   getMajorByclassId,
   getGradeByclassId,
 } from "@/api/class";
-import {getUserPermission} from "@/api/userpermission";
+import { getUserPermission } from "@/api/userpermission";
 export default {
   name: "Admin",
   data() {
@@ -387,7 +409,8 @@ export default {
       "地址",
     ];
     return {
-      defaultAvatar: "http://localhost:9001/sms/file/9df4588dcb844f63b657dd6b95f9379a.jpg",
+      defaultAvatar:
+        "http://localhost:9001/sms/file/9df4588dcb844f63b657dd6b95f9379a.jpg",
       tableData: [],
       total: 0,
       pageNum: 1,
@@ -409,7 +432,7 @@ export default {
         birthday: "",
         email: "",
         phone: "",
-        address: ""
+        address: "",
       },
       userform: {
         username: "",
@@ -417,9 +440,9 @@ export default {
         activation: 0,
         roleId: "",
         roleName: 0,
-        avatar: ""
+        avatar: "",
       },
-      authority:[]//权限
+      authority: [], //权限
     };
   },
   created() {
@@ -427,8 +450,8 @@ export default {
     this.load();
     //请求班级、年级、专业等数据
     this.getsomeList();
-        //获取权限
-        this.getauthority();
+    //获取权限
+    this.getauthority();
   },
   methods: {
     // 获取用户数据
@@ -449,17 +472,17 @@ export default {
         });
       }
     },
-     //获取权限列表
-     async getauthority(){
-     let user = JSON.parse(localStorage.getItem("user"))
-     //获取权限列表
-     const props={
-      roleId:user.roleId
-     }
-     const res = await getUserPermission(props);
-     if(res.code == 200){
-      this.authority = res.data
-     }
+    //获取权限列表
+    async getauthority() {
+      let user = JSON.parse(localStorage.getItem("user"));
+      //获取权限列表
+      const props = {
+        roleId: user.roleId,
+      };
+      const res = await getUserPermission(props);
+      if (res.code == 200) {
+        this.authority = res.data;
+      }
     },
     //获取用户的激活状态
     async getactive(item) {
@@ -608,7 +631,7 @@ export default {
       this.userform.activation = this.adminform.activation;
       this.userform.roleId = this.adminform.id;
       this.userform.roleName = 2;
-      this.adminform.birthday = moment(this.adminform.birthday).add(1, 'day')
+      this.adminform.birthday = moment(this.adminform.birthday).add(1, "day");
 
       //添加管理员
       const res = await saveAdmin(this.adminform);
@@ -672,7 +695,7 @@ export default {
       this.userform.activation = this.adminform.activation;
       this.userform.roleId = this.adminform.id;
       this.userform.roleName = 2;
-      this.adminform.birthday = moment(this.adminform.birthday).add(1, 'day')
+      this.adminform.birthday = moment(this.adminform.birthday).add(1, "day");
       const res = await updataAdmin(this.adminform);
       if (res.code == 200) {
         const res1 = await updataUser(this.userform);
@@ -750,8 +773,8 @@ export default {
   },
 };
 </script>
-    
-  <style scoped>
+
+<style scoped>
 .bottom_clearfix {
   display: flex;
   position: absolute;
@@ -762,5 +785,198 @@ export default {
 .teaAvatar {
   width: 280px;
   height: 240px;
+}
+.page-container {
+  padding: 20px;
+  background: #f0f2f5;
+}
+
+.search-container {
+  background: linear-gradient(135deg, #ffffff 0%, #f5f7fa 100%);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.08);
+  padding: 24px;
+  margin-bottom: 24px;
+  transition: all 0.3s ease;
+}
+
+.search-container:hover {
+  box-shadow: 0 6px 24px 0 rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+}
+
+.search-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.search-conditions {
+  border-bottom: 2px dashed #e6e8eb;
+  padding-bottom: 20px;
+}
+
+.search-inputs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.search-item {
+  flex: 1;
+  min-width: 200px;
+  max-width: 300px;
+}
+
+.function-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #e4e7ed;
+}
+
+/* Element UI 组件样式覆盖 */
+.el-button {
+  border-radius: 8px;
+  padding: 10px 20px;
+  transition: all 0.3s ease;
+
+  &:not(.el-button--text) {
+    box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.1);
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.15);
+    }
+  }
+}
+
+.el-button--primary {
+  background: linear-gradient(135deg, #409eff 0%, #3a8ee6 100%);
+  border: none;
+
+  &:hover {
+    background: linear-gradient(135deg, #66b1ff 0%, #409eff 100%);
+  }
+}
+
+.el-button--danger {
+  background: linear-gradient(135deg, #f56c6c 0%, #e64242 100%);
+  border: none;
+
+  &:hover {
+    background: linear-gradient(135deg, #f78989 0%, #f56c6c 100%);
+  }
+}
+
+.el-button--success {
+  background: linear-gradient(135deg, #67c23a 0%, #529b2e 100%);
+  border: none;
+
+  &:hover {
+    background: linear-gradient(135deg, #85ce61 0%, #67c23a 100%);
+  }
+}
+
+.el-button--warning {
+  background: linear-gradient(135deg, #e6a23c 0%, #c67605 100%);
+  border: none;
+
+  &:hover {
+    background: linear-gradient(135deg, #ebb563 0%, #e6a23c 100%);
+  }
+}
+
+.el-table {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.08);
+  margin-top: 20px;
+
+  .el-table__header-wrapper {
+    th {
+      background: #f5f7fa;
+      color: #606266;
+      font-weight: 600;
+    }
+  }
+
+  .el-table__row {
+    transition: all 0.3s ease;
+
+    &:hover {
+      background-color: #f5f7fa !important;
+      transform: scale(1.001);
+    }
+  }
+}
+
+.el-dialog {
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+
+  .el-dialog__header {
+    background: linear-gradient(135deg, #409eff 0%, #3a8ee6 100%);
+    padding: 20px;
+    margin: 0;
+
+    .el-dialog__title {
+      color: white;
+      font-weight: 600;
+    }
+
+    .el-dialog__headerbtn {
+      top: 20px;
+
+      .el-dialog__close {
+        color: white;
+      }
+    }
+  }
+
+  .el-dialog__body {
+    padding: 30px;
+  }
+}
+
+.el-form-item {
+  margin-bottom: 24px;
+
+  .el-form-item__label {
+    font-weight: 500;
+  }
+
+  .el-form-item__content {
+    .el-input__inner {
+      border-radius: 8px;
+    }
+  }
+}
+
+/* 动画效果 */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.slide-fade-enter-active {
+  transition: all 0.3s ease;
+}
+
+.slide-fade-leave-active {
+  transition: all 0.3s cubic-bezier(1, 0.5, 0.8, 1);
+}
+
+.slide-fade-enter,
+.slide-fade-leave-to {
+  transform: translateX(10px);
+  opacity: 0;
 }
 </style>

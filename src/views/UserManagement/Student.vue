@@ -1,19 +1,25 @@
 <template>
   <div>
     <!-- 搜索 start-->
-    <div style="margin-bottom: 5px">
-      <el-checkbox-group
-        v-model="checkedsearchs"
-        @change="handlecheckedsearchsChange"
-        :max="3"
-        :min="1"
-      >
-        <el-checkbox v-for="search in searchs" :label="search" :key="search">{{
-          search
-        }}</el-checkbox>
-      </el-checkbox-group>
+    <div class="search-container">
+      <div class="search-form">
+        <div style="margin-bottom: 5px">
+          <el-checkbox-group
+            v-model="checkedsearchs"
+            @change="handlecheckedsearchsChange"
+            :max="3"
+            :min="1"
+          >
+            <el-checkbox
+              v-for="search in searchs"
+              :label="search"
+              :key="search"
+              >{{ search }}</el-checkbox
+            >
+          </el-checkbox-group>
+        </div>
+      </div>
     </div>
-
     <div style="margin: 10px 0; position: relative">
       <div style="display: flex">
         <div
@@ -72,8 +78,11 @@
           ></el-input>
         </div>
 
-        <el-button type="primary" style="margin-left: 5px" @click="handleSearch"
-        :disabled="!authority.includes(4)"
+        <el-button
+          type="primary"
+          style="margin-left: 5px"
+          @click="handleSearch"
+          :disabled="!authority.includes(4)"
           >搜索</el-button
         >
         <el-button type="warning" @click="reset">重置</el-button>
@@ -81,8 +90,10 @@
 
       <!-- 功能菜单 -->
       <div style="position: absolute; right: 0px; top: 0px">
-        <el-button type="primary" @click="addStudentFunc"
-        :disabled="!authority.includes(1)"
+        <el-button
+          type="primary"
+          @click="addStudentFunc"
+          :disabled="!authority.includes(1)"
           >新增 <i class="el-icon-circle-plus-outline"></i
         ></el-button>
         <el-popconfirm
@@ -94,7 +105,10 @@
           title="确定删除吗？"
           @confirm="batchDeletion"
         >
-          <el-button type="danger" slot="reference" :disabled="!authority.includes(2)"
+          <el-button
+            type="danger"
+            slot="reference"
+            :disabled="!authority.includes(2)"
             >批量删除 <i class="el-icon-remove-outline"></i
           ></el-button>
         </el-popconfirm>
@@ -107,14 +121,18 @@
           :on-success="handExcelleImportSuccess"
           :on-error="handleExcelleImportError"
         >
-          <el-button type="primary" style="margin-right: 5px"
-          :disabled="!authority.includes(5)"
+          <el-button
+            type="primary"
+            style="margin-right: 5px"
+            :disabled="!authority.includes(5)"
             >导入 <i class="el-icon-upload"></i
           ></el-button>
         </el-upload>
 
-        <el-button type="primary" @click="exportBtn"
-        :disabled="!authority.includes(6)"
+        <el-button
+          type="primary"
+          @click="exportBtn"
+          :disabled="!authority.includes(6)"
           >导出 <i class="el-icon-download"></i
         ></el-button>
       </div>
@@ -175,8 +193,11 @@
             title="确定删除吗？"
             @confirm="delStudent(scope.row.id)"
           >
-            <el-button type="danger" size="mini" slot="reference"
-            :disabled="!authority.includes(2)"
+            <el-button
+              type="danger"
+              size="mini"
+              slot="reference"
+              :disabled="!authority.includes(2)"
               >删除</el-button
             >
             <!-- <el-button type="danger" slot="reference" icon="el-icon-delete" circle></el-button> -->
@@ -450,11 +471,28 @@
 
 <script>
 import moment from "moment";
-import { getStudentPage,saveStudent,removeStudent,updatastudent} from "@/api/student";
-import { getUser, updateIsActivate ,addUser,removeUser,updataUser} from "@/api/user";
-import { getClassList, getGradeList, getClassListBygradeId,getMajorByclassId,getGradeByclassId } from "@/api/class";
+import {
+  getStudentPage,
+  saveStudent,
+  removeStudent,
+  updatastudent,
+} from "@/api/student";
+import {
+  getUser,
+  updateIsActivate,
+  addUser,
+  removeUser,
+  updataUser,
+} from "@/api/user";
+import {
+  getClassList,
+  getGradeList,
+  getClassListBygradeId,
+  getMajorByclassId,
+  getGradeByclassId,
+} from "@/api/class";
 import { getMajorList } from "@/api/major";
-import {getUserPermission} from "@/api/userpermission";
+import { getUserPermission } from "@/api/userpermission";
 export default {
   name: "Student",
   data() {
@@ -507,7 +545,7 @@ export default {
       grades: [],
       classIds: [],
       majors: [],
-      authority:[]//权限
+      authority: [], //权限
     };
   },
   created() {
@@ -533,22 +571,22 @@ export default {
         this.tableData = res.data.records;
         this.total = res.data.total;
         this.tableData.forEach((item, index) => {
-        this.getactive(item);
+          this.getactive(item);
         });
       }
     },
 
     //获取权限列表
-    async getauthority(){
-     let user = JSON.parse(localStorage.getItem("user"))
-     //获取权限列表
-     const props={
-      roleId:user.roleId
-     }
-     const res = await getUserPermission(props);
-     if(res.code == 200){
-      this.authority = res.data
-     }
+    async getauthority() {
+      let user = JSON.parse(localStorage.getItem("user"));
+      //获取权限列表
+      const props = {
+        roleId: user.roleId,
+      };
+      const res = await getUserPermission(props);
+      if (res.code == 200) {
+        this.authority = res.data;
+      }
     },
     //获取用户的激活状态
     async getactive(item) {
@@ -657,10 +695,10 @@ export default {
     async choiceClassFunc() {
       //获得专业
       const params = {
-            classId: this.stuform.classId,
-          }
-      const res1 = await getMajorByclassId(params)
-      const res2 = await getGradeByclassId(params)
+        classId: this.stuform.classId,
+      };
+      const res1 = await getMajorByclassId(params);
+      const res2 = await getGradeByclassId(params);
       if (res1.code == 200) {
         this.majors = res1.data;
       }
@@ -692,7 +730,7 @@ export default {
       this.userform.activation = this.stuform.activation;
       this.userform.roleId = this.stuform.id;
       this.userform.roleName = 4;
-      this.stuform.birthday = moment(this.stuform.birthday).add(1, 'day')
+      this.stuform.birthday = moment(this.stuform.birthday).add(1, "day");
 
       //添加学生
       const res = await saveStudent(this.stuform);
@@ -711,13 +749,12 @@ export default {
     },
     //删除学生
     async delStudent(id) {
-
-      const res = await removeStudent(id)
-      if(res.code == 200){
-        const res1 = await removeUser(id)
-        if(res1.code == 200){
+      const res = await removeStudent(id);
+      if (res.code == 200) {
+        const res1 = await removeUser(id);
+        if (res1.code == 200) {
           this.$message.success("删除成功");
-        }else{
+        } else {
           this.$message.error("删除失败");
         }
       }
@@ -740,8 +777,8 @@ export default {
         this.userform.roleName = res.data.roleName;
       }
       //获取激活信息
-      this.getactive(row)
-      
+      this.getactive(row);
+
       this.updataStudent = true;
     },
     updatastudentsubmitoff() {
@@ -756,20 +793,19 @@ export default {
       this.userform.password = this.stuform.password;
       this.userform.activation = this.stuform.activation;
       this.userform.roleId = this.stuform.id;
-      this.stuform.birthday = moment(this.stuform.birthday).add(1, 'day')
+      this.stuform.birthday = moment(this.stuform.birthday).add(1, "day");
       this.userform.roleName = 4;
-      const res = await updatastudent(this.stuform)
-      if(res.code == 200){
-        const res1 = await updataUser(this.userform)
-        if(res1.code == 200){
+      const res = await updatastudent(this.stuform);
+      if (res.code == 200) {
+        const res1 = await updataUser(this.userform);
+        if (res1.code == 200) {
           this.$message.success("修改成功");
-        }else{
+        } else {
           this.$message.error("修改失败");
         }
         this.updatastudentsubmitoff();
       }
       this.updataStudent = false;
-
     },
     handleSearch() {
       this.searchString = "";
@@ -844,4 +880,62 @@ export default {
 </script>
 
 <style scoped>
+.search-container {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.05);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.search-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.search-conditions {
+  border-bottom: 1px dashed #e4e7ed;
+  padding-bottom: 15px;
+}
+
+.search-inputs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  align-items: flex-start;
+}
+
+.search-item {
+  flex: 1;
+  min-width: 200px;
+  max-width: 300px;
+}
+
+.search-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+/* Element UI 组件样式覆盖 */
+.el-checkbox-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.el-checkbox {
+  margin-right: 0 !important;
+}
+
+.el-input-number,
+.el-date-editor.el-input,
+.el-select {
+  width: 100%;
+}
+
+.el-radio-group {
+  display: flex;
+  gap: 15px;
+}
 </style>

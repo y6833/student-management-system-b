@@ -91,63 +91,113 @@ export default {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background-image: url("../assets/login/login.jpg");
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("../assets/login/login.jpg");
   background-size: cover;
+  background-position: center;
   background-repeat: no-repeat;
 }
 
 .login-content {
-  /* background-color: #fff; */
-  width: 520px;
-  background-color: rgba(129, 201, 235, 0.7);
+  width: 400px;
+  background: rgba(255, 255, 255, 0.95);
   padding: 40px;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-  animation: glow 2s infinite ease-in-out alternate;
+  border-radius: 15px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  animation: fadeIn 0.8s ease-out;
 }
 
-@keyframes glow {
-  0% {
-    transform: scale(1);
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.493);
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
   }
-  50% {
-    transform: scale(1.05);
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
-  }
-  100% {
-    transform: scale(1);
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
 h2 {
-  color: #333;
+  color: #2c3e50;
   text-align: center;
-  font-size: 24px;
-  margin-bottom: 20px;
+  font-size: 28px;
+  margin-bottom: 30px;
+  font-weight: 600;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .login-input {
-  width: 100%;
-  /* padding: 10px; */
-  /* border: 1px solid #ccc; */
-  border-radius: 5px;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
+}
+
+.login-input .el-input__inner {
+  height: 45px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 2px solid #e8e8e8;
+  border-radius: 8px;
+  padding-left: 45px;
+  transition: all 0.3s ease;
+  font-size: 15px;
+}
+
+.login-input .el-input__inner:focus {
+  border-color: #409EFF;
+  box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.2);
+}
+
+.login-input .el-input__prefix {
+  left: 15px;
+}
+
+.login-input .el-input__icon {
+  font-size: 18px;
+  color: #909399;
 }
 
 .login-button {
   width: 100%;
-  padding: 10px;
-  background-color: rgba(0, 123, 255, 0.5);
-  color: #fff;
+  height: 45px;
+  background: linear-gradient(45deg, #409EFF, #36D1DC);
   border: none;
-  border-radius: 5px;
-  cursor: pointer;
+  border-radius: 8px;
+  color: white;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  margin-top: 10px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(64, 158, 255, 0.2);
 }
 
 .login-button:hover {
-  background-color: #0056b3;
-  transform: scale(1.05);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(64, 158, 255, 0.3);
+  background: linear-gradient(45deg, #36D1DC, #409EFF);
+}
+
+.login-button:active {
+  transform: translateY(0);
+}
+
+.el-form-item.is-error .el-input__inner {
+  border-color: #F56C6C;
+  box-shadow: 0 0 0 2px rgba(245, 108, 108, 0.2);
+}
+
+.el-message {
+  min-width: 300px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* 添加响应式设计 */
+@media screen and (max-width: 480px) {
+  .login-content {
+    width: 90%;
+    padding: 30px;
+  }
 }
 </style>

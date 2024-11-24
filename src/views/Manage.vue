@@ -33,15 +33,20 @@
     </el-container>
   </el-container>
 </template>
-<style>
+<style scoped>
 .el-header {
-  background-color: #b3c0d1;
-  color: #333;
-  line-height: 60px;
+  box-shadow: none;
+  padding: 0;
+  height: 64px !important;
+  line-height: 64px;
+  background: transparent;
 }
 
 .el-aside {
   color: #333;
+  background-color: rgb(238, 241, 246);
+  box-shadow: 2px 0 6px rgb(0 21 41 / 35%);
+  transition: width 0.3s;
 }
 </style>
 <script>
@@ -97,8 +102,3 @@ export default {
   },
 };
 </script>
-<style scoped>
-.el-header{
-  box-shadow: rgba(0, 21, 41, 0.35) 2px 0px 6px;
-}
-</style>

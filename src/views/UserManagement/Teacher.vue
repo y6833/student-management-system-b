@@ -1,81 +1,97 @@
 <template>
-  <div>
-    <!-- 搜索 start-->
-    <div style="margin-bottom: 5px">
-      <el-checkbox-group
-        v-model="checkedsearchs"
-        @change="handlecheckedsearchsChange"
-        :max="3"
-        :min="1"
-      >
-        <el-checkbox
-          v-for="search in searchs"
-          :label="search"
-          :key="search"
-        ></el-checkbox>
-      </el-checkbox-group>
-    </div>
-
-    <div style="margin: 10px 0; position: relative">
-      <div style="display: flex">
-        <div
-          v-for="(check, index) in checkedsearchs"
-          :key="index"
-          style="margin-right: 5px"
-        >
-          <div v-if="check === searchs[2]" style="padding: 8px 10px">
-            <el-radio v-model="searchContent[index]" label="男">男</el-radio>
-            <el-radio v-model="searchContent[index]" label="女">女</el-radio>
-          </div>
-
-          <div class="block" v-else-if="check === searchs[3]">
-            <el-date-picker
-              v-model="searchContent[index]"
-              type="date"
-              placeholder="请选择出生日期"
-            >
-            </el-date-picker>
-          </div>
-          <div v-else-if="check === searchs[4]">
-            <el-select v-model="searchContent[index]" placeholder="请选择年级">
-              <el-option
-                v-for="(item, index) in grades"
-                :key="index"
-                :label="item"
-                :value="item"
-              ></el-option>
-            </el-select>
-          </div>
-          <div v-else-if="check === searchs[5]">
-            <el-select v-model="searchContent[index]" placeholder="请选择班级">
-              <el-option
-                v-for="(item, index) in classIds"
-                :key="index"
-                :label="item"
-                :value="item"
-              ></el-option>
-            </el-select>
-          </div>
-          <el-input
-            v-else
-            v-model="searchContent[index]"
-            :placeholder="check"
-            suffix-icon="el-icon-search"
-          ></el-input>
+  <div class="page-container">
+    <div class="search-container">
+      <div class="search-form">
+        <!-- 搜索条件选择 -->
+        <div class="search-conditions">
+          <!-- 原有的el-checkbox-group -->
+          <el-checkbox-group
+            v-model="checkedsearchs"
+            @change="handlecheckedsearchsChange"
+            :max="3"
+            :min="1"
+          >
+            <el-checkbox
+              v-for="search in searchs"
+              :label="search"
+              :key="search"
+            ></el-checkbox>
+          </el-checkbox-group>
         </div>
 
-        <el-button
-          type="primary"
-          style="margin-left: 5px"
-          @click="handleSearch"
-          :disabled="!authority.includes(4)"
-          >搜索</el-button
-        >
-        <el-button type="warning" @click="reset">重置</el-button>
+        <!-- 搜索表单 -->
+        <div class="search-inputs">
+          <!-- 原有的搜索输入框 -->
+          <div
+            v-for="(check, index) in checkedsearchs"
+            :key="index"
+            style="margin-right: 5px"
+          >
+            <div v-if="check === searchs[2]" style="padding: 8px 10px">
+              <el-radio v-model="searchContent[index]" label="男">男</el-radio>
+              <el-radio v-model="searchContent[index]" label="女">女</el-radio>
+            </div>
+
+            <div class="block" v-else-if="check === searchs[3]">
+              <el-date-picker
+                v-model="searchContent[index]"
+                type="date"
+                placeholder="请选择出生日期"
+              >
+              </el-date-picker>
+            </div>
+            <div v-else-if="check === searchs[4]">
+              <el-select
+                v-model="searchContent[index]"
+                placeholder="请选择年级"
+              >
+                <el-option
+                  v-for="(item, index) in grades"
+                  :key="index"
+                  :label="item"
+                  :value="item"
+                ></el-option>
+              </el-select>
+            </div>
+            <div v-else-if="check === searchs[5]">
+              <el-select
+                v-model="searchContent[index]"
+                placeholder="请选择班级"
+              >
+                <el-option
+                  v-for="(item, index) in classIds"
+                  :key="index"
+                  :label="item"
+                  :value="item"
+                ></el-option>
+              </el-select>
+            </div>
+            <el-input
+              v-else
+              v-model="searchContent[index]"
+              :placeholder="check"
+              suffix-icon="el-icon-search"
+            ></el-input>
+          </div>
+        </div>
+
+        <!-- 搜索按钮组 -->
+        <div class="search-buttons">
+          <!-- 原有的搜索和重置按钮 -->
+          <el-button
+            type="primary"
+            style="margin-left: 5px"
+            @click="handleSearch"
+            :disabled="!authority.includes(4)"
+            >搜索</el-button
+          >
+          <el-button type="warning" @click="reset">重置</el-button>
+        </div>
       </div>
 
-      <!-- 功能菜单 -->
-      <div style="position: absolute; right: 0px; top: 0px">
+      <!-- 功能按钮组 -->
+      <div class="function-buttons">
+        <!-- 原有的新增、删除、导入、导出按钮 -->
         <el-button
           type="primary"
           @click="addTeacherFunc"
@@ -123,94 +139,96 @@
         ></el-button>
       </div>
     </div>
-    <!-- 搜索end -->
 
-    <!-- 教师管理 -->
-
-    <el-row>
-      <el-col
-        :span="4"
-        v-for="(item, index) in tableData"
-        :key="index"
-        :offset="index % 5 == 0 ? 0 : 1"
-      >
-        <el-card :body-style="{ padding: '0px' }" shadow="hover">
-          <el-checkbox
-            id="myCheckbox"
-            v-model="selectedId"
-            :label="item.id"
-            multiple
-            style="position: absolute; top: -3px"
-          >
-            <label for="myCheckbox" style="display: none"></label>
-          </el-checkbox>
-          <el-image
-            class="teaAvatar"
-            :src="item.avatar || defaultAvatar"
-            :preview-src-list="[item.avatar || defaultAvatar]"
-            fit="fill"
-          ></el-image>
-          <div style="padding: 14px; position: relative">
-            <p>姓名：{{ item.name }}</p>
-            <p>性别：{{ item.gender }}</p>
-            <p>年龄：{{ age(item.birthday) }}</p>
-            <p>教职工号：{{ item.id }}</p>
-            <p>
-              激活：
-              <el-switch
-                v-model="item.activation"
-                active-color="#13ce66"
-                inactive-color="#ff4949"
-                active-value="true"
-                inactive-value="false"
-                @change="handleSwitchChange(item)"
-              >
-              </el-switch>
-            </p>
-            <div class="bottom_clearfix">
-              <el-button
-                type="primary"
-                icon="el-icon-edit"
-                circle
-                @click="updataTeacherfunc(item)"
-                :disabled="!authority.includes(3)"
-              ></el-button>
-              <el-popconfirm
-                style="margin: 0 0 0 5px"
-                confirm-button-text="确定"
-                cancel-button-text="再想想"
-                icon="el-icon-info"
-                icon-color="red"
-                title="确定删除吗？"
-                @confirm="delTeacher(item.id)"
-              >
+    <!-- 表格内容 -->
+    <div class="content-container">
+      <!-- 原有的el-table等内容 -->
+      <el-row>
+        <el-col
+          :span="4"
+          v-for="(item, index) in tableData"
+          :key="index"
+          :offset="index % 5 == 0 ? 0 : 1"
+        >
+          <el-card :body-style="{ padding: '0px' }" shadow="hover">
+            <el-checkbox
+              id="myCheckbox"
+              v-model="selectedId"
+              :label="item.id"
+              multiple
+              style="position: absolute; top: -3px"
+            >
+              <label for="myCheckbox" style="display: none"></label>
+            </el-checkbox>
+            <el-image
+              class="teaAvatar"
+              :src="item.avatar || defaultAvatar"
+              :preview-src-list="[item.avatar || defaultAvatar]"
+              fit="fill"
+            ></el-image>
+            <div style="padding: 14px; position: relative">
+              <p>姓名：{{ item.name }}</p>
+              <p>性别：{{ item.gender }}</p>
+              <p>年龄：{{ age(item.birthday) }}</p>
+              <p>教职工号：{{ item.id }}</p>
+              <p>
+                激活：
+                <el-switch
+                  v-model="item.activation"
+                  active-color="#13ce66"
+                  inactive-color="#ff4949"
+                  active-value="true"
+                  inactive-value="false"
+                  @change="handleSwitchChange(item)"
+                >
+                </el-switch>
+              </p>
+              <div class="bottom_clearfix">
                 <el-button
-                  type="danger"
-                  slot="reference"
-                  icon="el-icon-delete"
+                  type="primary"
+                  icon="el-icon-edit"
                   circle
-                  :disabled="!authority.includes(2)"
+                  @click="updataTeacherfunc(item)"
+                  :disabled="!authority.includes(3)"
                 ></el-button>
-              </el-popconfirm>
+                <el-popconfirm
+                  style="margin: 0 0 0 5px"
+                  confirm-button-text="确定"
+                  cancel-button-text="再想想"
+                  icon="el-icon-info"
+                  icon-color="red"
+                  title="确定删除吗？"
+                  @confirm="delTeacher(item.id)"
+                >
+                  <el-button
+                    type="danger"
+                    slot="reference"
+                    icon="el-icon-delete"
+                    circle
+                    :disabled="!authority.includes(2)"
+                  ></el-button>
+                </el-popconfirm>
+              </div>
             </div>
-          </div>
-        </el-card>
-      </el-col>
-    </el-row>
+          </el-card>
+        </el-col>
+      </el-row>
 
-    <div style="padding: 10px 0">
-      <el-pagination
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-        :current-page="pageNum"
-        :page-sizes="[5, 10, 15, 20]"
-        :page-size="pageSize"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="total"
-      >
-      </el-pagination>
+      <div style="padding: 10px 0">
+        <el-pagination
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :current-page="pageNum"
+          :page-sizes="[5, 10, 15, 20]"
+          :page-size="pageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="total"
+        >
+        </el-pagination>
+      </div>
     </div>
 
+    <!-- 对话框保持不变 -->
     <!-- 新增表单 -->
 
     <el-dialog title="新增教师" :visible.sync="addTeacher">
@@ -438,7 +456,7 @@
     </el-dialog>
   </div>
 </template>
-  
+
 <script>
 import moment from "moment";
 import {
@@ -546,7 +564,6 @@ export default {
         });
       }
     },
-
 
     //获取权限列表
     async getauthority() {
@@ -850,7 +867,7 @@ export default {
   },
 };
 </script>
-  
+
 <style scoped>
 .bottom_clearfix {
   display: flex;
@@ -862,5 +879,198 @@ export default {
 .teaAvatar {
   width: 280px;
   height: 240px;
+}
+.page-container {
+  padding: 20px;
+  background: #f0f2f5;
+}
+
+.search-container {
+  background: linear-gradient(135deg, #ffffff 0%, #f5f7fa 100%);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.08);
+  padding: 24px;
+  margin-bottom: 24px;
+  transition: all 0.3s ease;
+}
+
+.search-container:hover {
+  box-shadow: 0 6px 24px 0 rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+}
+
+.search-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.search-conditions {
+  border-bottom: 2px dashed #e6e8eb;
+  padding-bottom: 20px;
+}
+
+.search-inputs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.search-item {
+  flex: 1;
+  min-width: 200px;
+  max-width: 300px;
+}
+
+.function-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #e4e7ed;
+}
+
+/* Element UI 组件样式覆盖 */
+.el-button {
+  border-radius: 8px;
+  padding: 10px 20px;
+  transition: all 0.3s ease;
+
+  &:not(.el-button--text) {
+    box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.1);
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.15);
+    }
+  }
+}
+
+.el-button--primary {
+  background: linear-gradient(135deg, #409eff 0%, #3a8ee6 100%);
+  border: none;
+
+  &:hover {
+    background: linear-gradient(135deg, #66b1ff 0%, #409eff 100%);
+  }
+}
+
+.el-button--danger {
+  background: linear-gradient(135deg, #f56c6c 0%, #e64242 100%);
+  border: none;
+
+  &:hover {
+    background: linear-gradient(135deg, #f78989 0%, #f56c6c 100%);
+  }
+}
+
+.el-button--success {
+  background: linear-gradient(135deg, #67c23a 0%, #529b2e 100%);
+  border: none;
+
+  &:hover {
+    background: linear-gradient(135deg, #85ce61 0%, #67c23a 100%);
+  }
+}
+
+.el-button--warning {
+  background: linear-gradient(135deg, #e6a23c 0%, #c67605 100%);
+  border: none;
+
+  &:hover {
+    background: linear-gradient(135deg, #ebb563 0%, #e6a23c 100%);
+  }
+}
+
+.el-table {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.08);
+  margin-top: 20px;
+
+  .el-table__header-wrapper {
+    th {
+      background: #f5f7fa;
+      color: #606266;
+      font-weight: 600;
+    }
+  }
+
+  .el-table__row {
+    transition: all 0.3s ease;
+
+    &:hover {
+      background-color: #f5f7fa !important;
+      transform: scale(1.001);
+    }
+  }
+}
+
+.el-dialog {
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+
+  .el-dialog__header {
+    background: linear-gradient(135deg, #409eff 0%, #3a8ee6 100%);
+    padding: 20px;
+    margin: 0;
+
+    .el-dialog__title {
+      color: white;
+      font-weight: 600;
+    }
+
+    .el-dialog__headerbtn {
+      top: 20px;
+
+      .el-dialog__close {
+        color: white;
+      }
+    }
+  }
+
+  .el-dialog__body {
+    padding: 30px;
+  }
+}
+
+.el-form-item {
+  margin-bottom: 24px;
+
+  .el-form-item__label {
+    font-weight: 500;
+  }
+
+  .el-form-item__content {
+    .el-input__inner {
+      border-radius: 8px;
+    }
+  }
+}
+
+/* 动画效果 */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.slide-fade-enter-active {
+  transition: all 0.3s ease;
+}
+
+.slide-fade-leave-active {
+  transition: all 0.3s cubic-bezier(1, 0.5, 0.8, 1);
+}
+
+.slide-fade-enter,
+.slide-fade-leave-to {
+  transform: translateX(10px);
+  opacity: 0;
 }
 </style>
