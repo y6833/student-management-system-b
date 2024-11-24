@@ -7,7 +7,7 @@
         box-shadow: 2px 0 6px rgb(0 21 41 / 35%);
       "
     >
-      <Aside :isCollapse="isCollapse" :logoTextShow="logoTextShow" />
+      <Aside :is-collapse="isCollapse" :logo-text-show="logoTextShow" />
     </el-aside>
 
     <el-container>
@@ -20,7 +20,7 @@
       >
         <Header
         v-if="headshow"
-          :collapseBtnClass="collapseBtnClass"
+          :collapse-btn-class="collapseBtnClass"
           :collapse="isCollapse"
           @callParentFunction="handleChildFunctionCall"
         />
@@ -65,8 +65,8 @@ export default {
   },
   methods: {
     /**
-    + * 切换组件的收缩状态。
-    + */
+    * 切换组件的收缩状态。
+    */
     collapse() {
       //点击收缩
       // 切换收缩状态
@@ -83,7 +83,6 @@ export default {
         this.sideWidth = 200;
         // 更新收缩按钮的样式类
         this.collapseBtnClass = "el-icon-s-fold";
-        this.sidewidth = 200;
         this.logoTextShow = true;
       }
     },
@@ -99,6 +98,21 @@ export default {
         clearTimeout(out);
       }, 0);
     },
+    handleResize() {
+      const width = window.innerWidth;
+      if (width <= 768 && !this.isCollapse) {
+        this.collapse();
+      } else if (width > 768 && this.isCollapse) {
+        this.collapse();
+      }
+    }
   },
+  created() {
+    window.addEventListener('resize', this.handleResize);
+    this.handleResize();
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.handleResize);
+  }
 };
 </script>

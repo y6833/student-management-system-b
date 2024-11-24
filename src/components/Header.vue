@@ -110,6 +110,18 @@ export default {
   transition: all 0.3s;
   border-radius: 8px;
   
+  &::before {
+    content: "\e7bd";  /* 使用element-ui的图标 */
+    font-family: "element-icons" !important;
+    transform: rotate(0deg);
+    display: inline-block;
+    transition: transform 0.3s;
+  }
+  
+  &.el-icon-s-unfold::before {
+    transform: rotate(180deg);
+  }
+  
   &:hover {
     color: #1890ff;
     background: rgba(24, 144, 255, 0.1);

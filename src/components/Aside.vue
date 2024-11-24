@@ -15,7 +15,7 @@
           :src="user.avatar || defaultAvatar"
           class="user-avatar"
         ></el-avatar>
-        <div class="user-info" v-if="!isCollapse">
+        <div class="user-info" v-show="!isCollapse">
           <h3>{{ user.username || '未知用户' }}</h3>
           <span class="user-role">{{ getRoleName }}</span>
         </div>
@@ -73,10 +73,19 @@
 <script>
 export default {
   name: "Aside",
+  props: {
+    isCollapse: {
+      type: Boolean,
+      default: false
+    },
+    logoTextShow: {
+      type: Boolean,
+      default: true
+    }
+  },
   data() {
     return {
       defaultAvatar: "http://localhost:9001/sms/file/9df4588dcb844f63b657dd6b95f9379a.jpg",
-      isCollapse: false,
       user: localStorage.getItem("user")
         ? JSON.parse(localStorage.getItem("user"))
         : {},
@@ -107,10 +116,16 @@ export default {
   },
   methods: {
     handleResize() {
-      this.isCollapse = window.innerWidth <= 768;
+      this.$emit('update:isCollapse', window.innerWidth <= 768);
     },
     goToProfile() {
-      this.$router.push('/person');
+      if (this.$route.path !== '/person') {
+        this.$router.push('/person').catch(err => {
+          if (err.name !== 'NavigationDuplicated') {
+            throw err;
+          }
+        });
+      }
     }
   }
 };
@@ -120,11 +135,15 @@ export default {
 .aside-menu {
   height: 100vh;
   border-right: 1px solid #e6e6e6;
+  overflow: hidden;
 }
 
 .menu-header {
   padding: 20px;
   border-bottom: 1px solid #f0f2f5;
+  transition: all 0.3s;
+  display: flex;
+  justify-content: center;
 }
 
 .user-profile {
@@ -135,6 +154,7 @@ export default {
   padding: 10px;
   border-radius: 8px;
   transition: all 0.3s ease;
+  /* width: 100%; */
 }
 
 .user-profile:hover {
@@ -144,11 +164,14 @@ export default {
 .user-avatar {
   border: 2px solid #e6e6e6;
   transition: all 0.3s ease;
+  flex-shrink: 0;
 }
 
 .user-info {
   flex: 1;
   min-width: 0;
+  opacity: 1;
+  transition: opacity 0.3s;
 }
 
 .user-info h3 {
@@ -164,6 +187,21 @@ export default {
 .user-role {
   font-size: 12px;
   color: #909399;
+}
+
+/* 收缩状态下的样式 */
+.el-menu--collapse + .menu-header {
+  padding: 10px 0;
+
+  .user-profile {
+    justify-content: center;
+    padding: 5px 0;
+    width: 64px;
+  }
+
+  .user-info {
+    display: none;
+  }
 }
 
 .el-menu-item {
@@ -218,6 +256,12 @@ export default {
   .user-profile {
     justify-content: center;
     padding: 5px;
+  }
+
+  .user-info {
+    opacity: 0;
+    width: 0;
+    overflow: hidden;
   }
 }
 </style>
