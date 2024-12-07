@@ -10,8 +10,9 @@
     "axios": "^0.25.0",
     "core-js": "^3.6.5",
     "dayjs": "^1.11.10",
-    "echarts": "^5.4.3",
+    "dompurify": "^3.2.2",
     "element-ui": "^2.15.14",
+    "marked": "^15.0.3",
     "mathjs": "^12.3.0",
     "moment": "^2.29.4",
     "vue": "^2.6.11",
@@ -23,6 +24,9 @@
     "@vue/cli-plugin-babel": "^5.0.8",
     "@vue/cli-plugin-router": "^5.0.8",
     "@vue/cli-service": "^5.0.8",
+    "echarts": "^5.4.3",
+    "node-sass": "^9.0.0",
+    "sass-loader": "^16.0.4",
     "vue-template-compiler": "^2.6.11"
   },
   "browserslist": [
